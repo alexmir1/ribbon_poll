@@ -9,34 +9,6 @@
 	<link rel='stylesheet' href='static/spectrum.css' />
 </head>
 <body>
-    <form action="" method="post" enctype="multipart/form-data">
-        {{form.hidden_tag()}}
-        <p>
-            <label>Цвет ленты:</label>
-            {{form.background_color(class='color_piker')}}
-        </p>
-        <p>
-            <label>Цвет текста:</label>
-            {{form.text_color(class='color_piker')}}
-        </p>
-        <p>
-            <label>Предпросмотр:</label>
-            <h1 id="sample">Выпускник</h1>
-        </p>
-        <input type="submit" value="Отправить">
-    </form>
-<script>
-    $(".color_piker").spectrum({
-        flat: true,
-        showInput: true,
-        showButtons: false
-    });
-    $("#text_color").on('move.spectrum', function(e, tinycolor) {
-        document.getElementById('sample').style.color = tinycolor.toHexString();
-    });
-    $("#background_color").on('move.spectrum', function(e, tinycolor) {
-        document.getElementById('sample').style.backgroundColor = tinycolor.toHexString();
-    });
-</script>
+
 </body>
 </html>
