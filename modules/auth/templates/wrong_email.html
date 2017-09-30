@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
+<p>Для авторизации нужен email вида s18*@179.ru, а вы даёте {{email}}.</p>
+<a href="{{url_for('auth.login')}}">Повторить авторизацию</a>
+{% endblock %}

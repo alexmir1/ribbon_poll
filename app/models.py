@@ -21,6 +21,25 @@ class User(db.Model):
 
     marks = db.relationship('Mark', backref='user', lazy='dynamic')
 
+    @property
+    def is_authenticated(self):
+        """
+        check if user authenticated know
+        :return: bool
+        """
+        return True
+
+    @property
+    def is_active(self):
+        """
+        check if user active know
+        :return: bool
+        """
+        return True
+
+    def get_id(self):
+        return str(self.id)
+
 
 class Mark(db.Model):
     id = db.Column(db.Integer, primary_key=True)
