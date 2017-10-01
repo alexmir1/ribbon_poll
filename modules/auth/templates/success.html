@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<p>Вы авторизованы как {{email}}.</p>
+<p>Вы авторизованы как {{email}}. Класс {{grade}}</p>
 <a href="{{url_for('index')}}">Продолжить</a>
 <a href="{{url_for('auth.logout')}}">Выйти</a>
 {% endblock %}

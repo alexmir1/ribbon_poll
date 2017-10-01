@@ -16,7 +16,7 @@ def login():
     flow = client.flow_from_clientsecrets(
         'client_secrets.json',
         scope='https://www.googleapis.com/auth/userinfo.email',
-        redirect_uri='http://localhost:8080/auth/')
+        redirect_uri=url_for('auth.login', _external=True))
     if 'code' in request.args:
         auth_code = request.args.get('code')
         credentials = flow.step2_exchange(auth_code)
@@ -34,7 +34,7 @@ def login():
                 db.session.add(user)
                 db.session.commit()
             login_user(user)
-            return render_template('success.html', email=email)
+            return render_template('success.html', email=email, grade=grade)
     else:
         auth_uri = flow.step1_get_authorize_url()
         return redirect(auth_uri)

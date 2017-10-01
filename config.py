@@ -5,7 +5,7 @@
 import os
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
-host = '0.0.0.0'
+host = 'localhost'
 port = 8080
 debug = True
 
