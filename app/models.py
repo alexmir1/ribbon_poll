@@ -8,8 +8,8 @@ from app import db
 
 class Color(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    image_link = db.Column(db.String(128))
-    hex = db.Column(db.String(8))
+    image_link = db.Column(db.String(128), unique=True)
+    hex = db.Column(db.String(8), unique=True)
 
     marks = db.relationship('Mark', backref='color', lazy='dynamic')
 
