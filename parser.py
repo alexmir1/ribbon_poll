@@ -1,6 +1,8 @@
 from sqlalchemy.exc import IntegrityError
 from app import db, app
 from app.models import Color
+import requests as rq
+from bs4 import BeautifulSoup
 
 
 def add_color(color):
@@ -13,7 +15,51 @@ def add_color(color):
         else:
             print('Successfully added color, hex: {}, image: {}'.format(color.hex, color.image_link))
 
+
+def format_to_standard_name(s):
+    t = s.lower()
+    res = ''
+    for x in t:
+        if x != ' ':
+            res += x
+    return res
+
+
+
 if __name__ == '__main__':
-    # TODO(Maksim): write parser
-    add_color(Color(image_link='https://promolenta.ru/wp-content/uploads/2016/02/satin_chvetnoy--153x230.jpg',
-                    hex='D7D2CB'))
+    mainpage = 'https://promolenta.ru/ispolzuemye-vidy-lenty/satinovaya-lenta-s-gladkim-kraem/'
+    name2hex_page = 'https://www.easycalculation.com/colorconverter/pantone-to-hex-table.php'
+
+    bs = BeautifulSoup(rq.get(mainpage).text)
+    bs2 = BeautifulSoup(rq.get(name2hex_page).text)
+
+    name2hex = dict()
+    block = bs2.find(name='div', attrs={'class': 'table clearfix'}).table
+
+    for tr_block in block.children:
+        try:
+            name2hex[format_to_standard_name(tr_block.contents[1].text)] = tr_block.contents[3].text
+        except Exception:
+            pass
+
+
+    divs = bs.find_all(attrs={'class': 'su-custom-gallery-slide'})
+    cnt_added = 0
+    for t in divs:
+        image_link = t.a['href']
+        id = t.a['title']
+
+        if ' ' in id:
+            key = id
+        else:
+            key = id + ' C'
+        key = format_to_standard_name(key)
+
+        if key in name2hex.keys():
+            cnt_added += 1
+            add_color(Color(image_link=image_link, hex=name2hex[key]))
+        else:
+            print('kek')
+            pass
+
+        print('Added {} from {} existing'.format(cnt_added, len(divs)))
