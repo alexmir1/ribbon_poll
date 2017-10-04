@@ -9,7 +9,5 @@ def before_request():
 
 
 @app.route('/')
-@login_required
 def index():
-    return g.user.email + ', grade: ' + g.user.grade
-
+    return render_template('index.html')

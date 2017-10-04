@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="/static/styles.css">
+<main class="mdl-layout mdl-base mdl-js-layout mdl-layout__content">
+    <div class="msg_card mdl-grid">
+        <div class="mdl-cell mdl-cell--12-col">
+            <h1>
+                Выбираем цвет ленты на выпускной.
+            </h1>
+            <p>
+                Обсуждать цвета бесполезно. Можно только голосовать.
+            </p>
+            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+                <tbody>
+                    <tr>
+                        <td width="80px">
+                            Оценка цветов
+                        </td>
+                        <td width="80px"></td>
+                        <td width="80px">
+                            <a href="{{url_for('tape_choose.vote')}}">
+                                <i class="material-icons">web</i>
+                                Вход[1]
+                            </a>
+                        </td>
+                        <td width="80px">
+                            <i class="material-icons">web</i>
+                            Результаты
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>
+                Цвета и картинки взяты
+                <a href="https://promolenta.ru/ispolzuemye-vidy-lenty/satinovaya-lenta-s-gladkim-kraem/">отсюда</a>.
+                Косяк с коричневым тоже на их совести.
+            </p>
+            <p>
+                Цвета определены с помощью
+                <a href="https://www.easycalculation.com/colorconverter/pantone-to-hex-table.php">этой таблицы</a>.
+            </p>
+            <p>
+                <a href="https://github.com/alexmir1/tape_choose">Код проекта на GitHub.</a>
+            </p>
+        </div>
+    </div>
+</main>
+{% endblock %}

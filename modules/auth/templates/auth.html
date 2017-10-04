@@ -2,18 +2,13 @@
 {% block content %}
 <link rel="stylesheet" href="/static/styles.css">
 <main class="msg_card mdl-layout mdl-base mdl-js-layout mdl-layout__content mdl-grid mdl-card mdl-cell">
-    <div class="mdl-card__title">
-        <h2 class="mdl-card__title-text">
-            Ошибка
-        </h2>
-    </div>
     <div class="mdl-card__supporting-text">
         <p>
-            Для авторизации нужен email вида s18***@179.ru, а вы даёте {{email}}.
+            На следующей странице необходимо авторизоваться с помощью email вида s18***@179.ru
         </p>
     </div>
     <div class="mdl-card__actions">
-        <a href="{{url_for('auth.callback', next=next)}}" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Повторить авторизацию</a>
+        <a href="{{url_for('auth.callback', next=next)}}" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Продолжить</a>
         <a href="{{url_for('index')}}" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">На главную</a>
     </div>
     {% endblock %}

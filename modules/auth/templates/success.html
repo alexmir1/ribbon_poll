@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-<p>Вы авторизованы как {{email}}. Класс {{grade}}</p>
-<a href="{{url_for('index')}}">Продолжить</a>
-<a href="{{url_for('auth.logout')}}">Выйти</a>
-{% endblock %}
+<link rel="stylesheet" href="/static/styles.css">
+<main class="msg_card mdl-layout mdl-base mdl-js-layout mdl-layout__content mdl-grid mdl-card mdl-cell">
+    <div class="mdl-card__supporting-text">
+        <p>
+            Вы авторизованы как {{name}}. Класс {{grade}}.
+        </p>
+    </div>
+    <div class="mdl-card__actions">
+        <a href="{{next}}" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Продолжить</a>
+        <a href="{{url_for('auth.logout', next=next)}}" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">Выйти</a>
+    </div>
+    {% endblock %}
+</main>

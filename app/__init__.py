@@ -25,9 +25,6 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object('config')
 
-    print('[-]USER Warning: deprecation resolve: SQLALCHEMY_TRACK_MODIFICATIONS')
-    app.config.update({'SQLALCHEMY_TRACK_MODIFICATIONS': True})
-
     migrate.init_app(app, db)
 
     lm.init_app(app)

@@ -9,14 +9,23 @@ from .get_grade import get_grade
 from app.models import User
 
 
+def ref():
+    return request.args.get('next') or url_for('index')
+
+
 @auth.route('/')
 def login():
+    return render_template('auth.html', next=ref())
+
+
+@auth.route('/callback')
+def callback():
     if g.user is not None and g.user.is_authenticated:
         return redirect(url_for('index'))
     flow = client.flow_from_clientsecrets(
         'client_secrets.json',
         scope=['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'],
-        redirect_uri=url_for('auth.login', _external=True))
+        redirect_uri=url_for('auth.callback', _external=True, next=ref()))
     if 'code' in request.args:
         auth_code = request.args.get('code')
         credentials = flow.step2_exchange(auth_code)
@@ -27,7 +36,7 @@ def login():
         grade = get_grade(email)
         if grade is None:
             print('wrong email: {}'.format(email))
-            return render_template('wrong_email.html', email=email)
+            return redirect(url_for('auth.wrong_email', email=email, next=ref()))
         else:
             user = User.query.filter_by(email=email).first()
             if user is None:
@@ -36,17 +45,27 @@ def login():
                 db.session.add(user)
                 db.session.commit()
             login_user(user)
-            return render_template('success.html', email=email, grade=grade)
+            return redirect(url_for('auth.success', next=ref()))
     else:
         auth_uri = flow.step1_get_authorize_url()
         return redirect(auth_uri)
+
+
+@auth.route('/wrong_email/<email>')
+def wrong_email(email):
+    return render_template('wrong_email.html', email=email, next=ref())
+
+
+@auth.route('/success')
+def success():
+    return render_template('success.html', name=g.user.name, grade=g.user.grade, next=ref())
 
 
 @auth.route('/logout')
 def logout():
     if g.user.is_authenticated:
         logout_user()
-    return redirect(url_for('index'))
+    return redirect(ref())
 
 
 @lm.user_loader
