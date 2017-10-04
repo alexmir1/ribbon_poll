@@ -1,4 +1,4 @@
-from app import app, forms, db
+from app import app, db
 from flask import render_template, g, redirect, url_for
 from flask_login import login_required, current_user
 

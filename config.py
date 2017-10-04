@@ -18,4 +18,4 @@ else:
     SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
 SQLALCHEMY_MIGRATE_REPO = os.path.join(BASEDIR, 'db_migrate_repo')
 
-MODULES = ['auth']
+MODULES = ['auth', 'tape_choose']

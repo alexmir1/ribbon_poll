@@ -1,7 +1,7 @@
 import httplib2
 from oauth2client import client
 from apiclient import discovery
-from flask import render_template, g, redirect, url_for, request, flash
+from flask import render_template, g, redirect, url_for, request
 from flask_login import login_user, logout_user
 from app import db, lm
 from . import auth

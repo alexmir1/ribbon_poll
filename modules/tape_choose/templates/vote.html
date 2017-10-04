@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="static/styles.css">
+<main class="mdl-layout mdl-base mdl-js-layout mdl-layout__content mdl-shadow--2dp">
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <section class="vote_card mdl-grid mdl-shadow--2dp mdl-card--border">
+            <div class="mdl-card mdl-cell mdl-cell--12-col mdl-card--border">
+                <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text">
+                        Информация
+                    </h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                    <p>
+                        Для каждого цвета дайте оценку от 1 до 100: насколько сильно вы хотите видеть этот цвет на выпускном
+                        (чем больше, тем сильнее). Оставьте поле пустым, если доверяете мнению одноклассников по этому цвету.
+                    </p>
+                    <p>
+                        При прохождении на телефоне рекомендуется повернуть его горизонтально.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        {% for tape in tapes %}
+            <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-card--border vote_card mdl-shadow--2dp through mdl-shadow--16dp">
+                <header class="mdl-cell mdl-cell--3-col">
+                    <image src="{{tape.image}}"></image>
+                </header>
+                <div class="mdl-card mdl-cell mdl-cell--9-col">
+                    <div class="mdl-card__supporting-text mdl-card--border tape" style="background-color: #{{tape.hex}}">
+                        <p class="tape">ВЫПУСКНИК 2К!8</p>
+                    </div>
+                    <div class="mdl-card__supporting-text">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            {{tape.input(class="mdl-textfield__input", pattern="^[1-9][0-9]?$|^100$")}}
+                            <label class="mdl-textfield__label" for="{{tape.input.id}}">Оценка..</label>
+                            <span class="mdl-textfield__error">Возможно стоит прочитать текст в первом абзаце</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        {% endfor %}
+        <div class="vote_card mdl-grid">
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect vote_card" type="submit">
+                Сохранить
+            </button>
+        </div>
+    </form>
+</main>
+{% endblock %}
