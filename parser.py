@@ -58,8 +58,5 @@ if __name__ == '__main__':
         if key in name2hex.keys():
             cnt_added += 1
             add_color(Color(image_link=image_link, hex=name2hex[key]))
-        else:
-            print('kek')
-            pass
 
-        print('Added {} from {} existing'.format(cnt_added, len(divs)))
+    print('Added {} from {} existing'.format(cnt_added, len(divs)))
