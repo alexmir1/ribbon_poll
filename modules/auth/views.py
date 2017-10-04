@@ -15,14 +15,15 @@ def login():
         return redirect(url_for('index'))
     flow = client.flow_from_clientsecrets(
         'client_secrets.json',
-        scope='https://www.googleapis.com/auth/userinfo.email',
+        scope=['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'],
         redirect_uri=url_for('auth.login', _external=True))
     if 'code' in request.args:
         auth_code = request.args.get('code')
         credentials = flow.step2_exchange(auth_code)
         http_auth = credentials.authorize(httplib2.Http())
         oauth2 = discovery.build('oauth2', 'v2', http=http_auth)
-        email = oauth2.userinfo().get().execute()['email']
+        user_info = oauth2.userinfo().get().execute()
+        email = user_info['email']
         grade = get_grade(email)
         if grade is None:
             print('wrong email: {}'.format(email))
@@ -30,7 +31,8 @@ def login():
         else:
             user = User.query.filter_by(email=email).first()
             if user is None:
-                user = User(email=email, grade=grade)
+                name = user_info['name']
+                user = User(email=email, grade=grade, name=name)
                 db.session.add(user)
                 db.session.commit()
             login_user(user)
