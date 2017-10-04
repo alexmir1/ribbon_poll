@@ -18,19 +18,19 @@ def add_color(color):
 
 def format_to_standard_name(s):
     t = s.lower()
-    res = ''
-    for x in t:
-        if x != ' ':
-            res += x
-    return res
-
+    t = t.replace('gray', 'grey')
+    t = t.replace('warm', 'war')
+    w = t.split()
+    if len(w) >= 2 and w[1][0] == '0':
+        w = w[1:]
+    return ''.join(w)
 
 
 if __name__ == '__main__':
-    mainpage = 'https://promolenta.ru/ispolzuemye-vidy-lenty/satinovaya-lenta-s-gladkim-kraem/'
+    main_page = 'https://promolenta.ru/ispolzuemye-vidy-lenty/satinovaya-lenta-s-gladkim-kraem/'
     name2hex_page = 'https://www.easycalculation.com/colorconverter/pantone-to-hex-table.php'
 
-    bs = BeautifulSoup(rq.get(mainpage).text)
+    bs = BeautifulSoup(rq.get(main_page).text)
     bs2 = BeautifulSoup(rq.get(name2hex_page).text)
 
     name2hex = dict()
@@ -41,7 +41,6 @@ if __name__ == '__main__':
             name2hex[format_to_standard_name(tr_block.contents[1].text)] = tr_block.contents[3].text
         except Exception:
             pass
-
 
     divs = bs.find_all(attrs={'class': 'su-custom-gallery-slide'})
     cnt_added = 0
@@ -58,5 +57,7 @@ if __name__ == '__main__':
         if key in name2hex.keys():
             cnt_added += 1
             add_color(Color(image_link=image_link, hex=name2hex[key]))
+        else:
+            print('Cant find {} color'.format(key))
 
     print('Added {} from {} existing'.format(cnt_added, len(divs)))
