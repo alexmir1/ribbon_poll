@@ -9,7 +9,7 @@ from app import db
 class Color(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     image_link = db.Column(db.String(128), unique=True)
-    hex = db.Column(db.String(8), unique=True)
+    hex = db.Column(db.String(8), nullable=False)
 
     marks = db.relationship('Mark', backref='color', lazy='dynamic')
 
@@ -18,6 +18,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), index=True, unique=True, nullable=False)
     grade = db.Column(db.String(4), index=True, nullable=False)
+    name = db.Column(db.String(64), unique=True, nullable=False)
 
     marks = db.relationship('Mark', backref='user', lazy='dynamic')
 

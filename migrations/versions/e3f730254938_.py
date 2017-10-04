@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: ce4f143dc8d8
+Revision ID: e3f730254938
 Revises: 
-Create Date: 2017-10-02 21:53:33.111798
+Create Date: 2017-10-04 17:21:13.501363
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ce4f143dc8d8'
+revision = 'e3f730254938'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,16 +21,17 @@ def upgrade():
     op.create_table('color',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('image_link', sa.String(length=128), nullable=True),
-    sa.Column('hex', sa.String(length=8), nullable=True),
+    sa.Column('hex', sa.String(length=8), nullable=False),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('hex'),
     sa.UniqueConstraint('image_link')
     )
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(length=64), nullable=False),
     sa.Column('grade', sa.String(length=4), nullable=False),
-    sa.PrimaryKeyConstraint('id')
+    sa.Column('name', sa.String(length=64), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name')
     )
     op.create_index(op.f('ix_user_email'), 'user', ['email'], unique=True)
     op.create_index(op.f('ix_user_grade'), 'user', ['grade'], unique=False)
