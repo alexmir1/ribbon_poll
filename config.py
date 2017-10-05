@@ -19,3 +19,5 @@ else:
 SQLALCHEMY_MIGRATE_REPO = os.path.join(BASEDIR, 'db_migrate_repo')
 
 MODULES = ['auth', 'tape_choose']
+
+PREFERRED_URL_SCHEME = 'http' if os.environ.get('HEROKU') is None else 'https'

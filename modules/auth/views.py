@@ -1,7 +1,7 @@
 import httplib2
 from oauth2client import client
 from apiclient import discovery
-from flask import render_template, g, redirect, url_for, request
+from flask import render_template, g, redirect, url_for, request, current_app
 from flask_login import login_user, logout_user
 from app import db, lm
 from . import auth
@@ -9,8 +9,8 @@ from .get_grade import get_grade
 from app.models import User
 
 
-def ref():
-    return request.args.get('next') or url_for('index')
+def ref(default=None):
+    return request.args.get('next') or default
 
 
 @auth.route('/')
@@ -25,7 +25,8 @@ def callback():
     flow = client.flow_from_clientsecrets(
         'client_secrets.json',
         scope=['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'],
-        redirect_uri=url_for('auth.callback', _external=True, next=ref()))
+        redirect_uri=url_for('auth.callback', _external=True, _scheme=current_app.config['PREFERRED_URL_SCHEME'],
+                             next=ref()))
     if 'code' in request.args:
         auth_code = request.args.get('code')
         credentials = flow.step2_exchange(auth_code)
@@ -58,14 +59,14 @@ def wrong_email(email):
 
 @auth.route('/success')
 def success():
-    return render_template('success.html', name=g.user.name, grade=g.user.grade, next=ref())
+    return render_template('success.html', name=g.user.name, grade=g.user.grade, next=ref(url_for('index')))
 
 
 @auth.route('/logout')
 def logout():
     if g.user.is_authenticated:
         logout_user()
-    return redirect(ref())
+    return redirect(ref(url_for('index')))
 
 
 @lm.user_loader
