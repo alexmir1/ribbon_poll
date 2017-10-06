@@ -11,7 +11,7 @@ port = 8080
 debug = True
 
 WTF_CSRF_ENABLED = True
-SECRET_KEY = 'THRG8r965ff5'
+SECRET_KEY = 'DFBDFSFVfsbddf'
 
 if os.environ.get('DATABASE_URL') is None:
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, 'app.db')
@@ -24,3 +24,5 @@ MODULES = ['auth', 'tape_choose', 'feedback']
 GRADES = ['b' + str(x) for x in range(1, 4)]
 
 PREFERRED_URL_SCHEME = 'http' if os.environ.get('HEROKU') is None else 'https'
+
+feedback_limit = 10

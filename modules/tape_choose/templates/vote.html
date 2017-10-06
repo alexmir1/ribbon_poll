@@ -46,29 +46,35 @@
         <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-card--border v_card mdl-shadow--2dp through mdl-shadow--16dp">
                 <div class="mdl-card mdl-cell mdl-cell--12-col">
                     <div class="mdl-card__supporting-text">
-                        <p>
-                            Пожайста, заполните эту форму, мы стараемся для вас. Оцените проект:
-                        </p>
-                        <div class="mdl-grid">
-                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-cell mdl-cell--4-col">
-                                {{rf.usability(class="mdl-textfield__input")}}
-                                <label class="mdl-textfield__label" for="{{rf.usability.id}}">Удобство</label>
+                        {% if feedback_available %}
+                            <p>
+                                Пожайста, заполните эту форму, мы стараемся для вас. Оцените проект:
+                            </p>
+                            <div class="mdl-grid">
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-cell mdl-cell--4-col">
+                                    {{rf.usability(class="mdl-textfield__input")}}
+                                    <label class="mdl-textfield__label" for="{{rf.usability.id}}">Удобство</label>
+                                </div>
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-cell mdl-cell--4-col">
+                                    {{rf.usefulness(class="mdl-textfield__input")}}
+                                    <label class="mdl-textfield__label" for="{{rf.usefulness.id}}">Полезность</label>
+                                </div>
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-cell mdl-cell--4-col">
+                                    {{rf.designing(class="mdl-textfield__input")}}
+                                    <label class="mdl-textfield__label" for="{{rf.designing.id}}">Дизайн</label>
+                                </div>
                             </div>
-                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-cell mdl-cell--4-col">
-                                {{rf.usefulness(class="mdl-textfield__input")}}
-                                <label class="mdl-textfield__label" for="{{rf.usefulness.id}}">Полезность</label>
+                            <div class="mdl-grid">
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-cell mdl-cell--12-col">
+                                    {{rf.comment(class="mdl-textfield__input")}}
+                                    <label class="mdl-textfield__label" for="{{rf.comment.id}}">Комментарий</label>
+                                </div>
                             </div>
-                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-cell mdl-cell--4-col">
-                                {{rf.designing(class="mdl-textfield__input")}}
-                                <label class="mdl-textfield__label" for="{{rf.designing.id}}">Дизайн</label>
-                            </div>
-                        </div>
-                        <div class="mdl-grid">
-                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-cell mdl-cell--12-col">
-                                {{rf.comment(class="mdl-textfield__input")}}
-                                <label class="mdl-textfield__label" for="{{rf.comment.id}}">Комментарий</label>
-                            </div>
-                        </div>
+                        {% else %}
+                            <p>
+                                Вы оставили слишком много отзывов.
+                            </p>
+                        {% endif %}
                     </div>
                 </div>
             </section>

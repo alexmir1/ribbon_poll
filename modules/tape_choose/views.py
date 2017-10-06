@@ -5,7 +5,7 @@ from app.models import Mark, Color, User
 from . import tape_choose, forms
 from .ColorInput import ColorInput
 from modules.feedback.form import Feedback
-from modules.feedback.send_feedback import send_feedback
+from modules.feedback.send_feedback import send_feedback, feedback_available
 
 
 @tape_choose.route('/vote', methods=['GET', 'POST'])
@@ -32,7 +32,7 @@ def vote():
                 mark = Mark.query.filter_by(user_id=g.user.id, color_id=color.id).first()
                 if mark is not None:
                     color.input.data = mark.mark
-        return render_template('vote.html', form=form, tapes=colors, rf=rf)
+        return render_template('vote.html', form=form, tapes=colors, rf=rf, feedback_available=feedback_available())
 
 
 @tape_choose.route('/results')

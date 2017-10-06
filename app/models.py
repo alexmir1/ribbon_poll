@@ -21,6 +21,7 @@ class User(db.Model):
     email = db.Column(db.String(64), index=True, unique=True, nullable=False)
     grade = db.Column(db.String(4), index=True, nullable=False)
     name = db.Column(db.String(64), unique=True, nullable=False)
+    feedback_count = db.Column(db.Integer, nullable=False, default=0)
 
     marks = db.relationship('Mark', backref='user', lazy='dynamic')
 
