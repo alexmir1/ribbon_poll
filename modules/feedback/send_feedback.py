@@ -4,8 +4,8 @@ from app import app, mail
 
 
 def send_feedback(form, headers):
-    if form.usability.data is not None or form.usefulness.data is not None or form.designing.data is not None or \
-                    form.comment.data is not None:
+    if form.usability.data.strip() != '' or form.usefulness.data.strip() != '' or form.designing.data.strip() != '' or \
+                    form.comment.data.strip() != '':
         msg = Message('{} - tape-choose feedback'.format(g.user.name),
                       sender=app.config['ADMINS'][0], recipients=app.config['ADMINS'], reply_to=g.user.email,
                       html=render_template_string(open('modules/feedback/templates/feedback_mail.html').read(),
