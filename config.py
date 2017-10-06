@@ -3,6 +3,7 @@
 """
 
 import os
+from mail_config import *
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 host = 'localhost'
@@ -18,6 +19,8 @@ else:
     SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
 SQLALCHEMY_MIGRATE_REPO = os.path.join(BASEDIR, 'db_migrate_repo')
 
-MODULES = ['auth', 'tape_choose']
+MODULES = ['auth', 'tape_choose', 'feedback']
+
+GRADES = ['b' + str(x) for x in range(1, 4)]
 
 PREFERRED_URL_SCHEME = 'http' if os.environ.get('HEROKU') is None else 'https'
