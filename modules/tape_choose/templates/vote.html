@@ -4,7 +4,7 @@
 <main class="mdl-layout mdl-base mdl-js-layout mdl-layout__content">
     <form action="" method="post">
         {{ form.hidden_tag() }}
-        <section class="vote_card mdl-grid mdl-shadow--2dp mdl-card--border">
+        <section class="v_card mdl-grid mdl-shadow--2dp mdl-card--border">
             <div class="mdl-card mdl-cell mdl-cell--12-col mdl-card--border">
                 <div class="mdl-card__title">
                     <h2 class="mdl-card__title-text">
@@ -15,6 +15,7 @@
                     <p>
                         Для каждого цвета дайте оценку от 1 до 100: насколько сильно вы хотите видеть этот цвет на выпускном
                         (чем больше, тем сильнее). Оставьте поле пустым, если доверяете мнению одноклассников по этому цвету.
+                        В форме нет ни одного обязательного поля.
                     </p>
                     <p>
                         При прохождении на телефоне рекомендуется повернуть его горизонтально.
@@ -24,7 +25,7 @@
         </section>
 
         {% for tape in tapes %}
-            <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-card--border vote_card mdl-shadow--2dp through mdl-shadow--16dp">
+            <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-card--border v_card mdl-shadow--2dp through mdl-shadow--16dp">
                 <header class="mdl-cell mdl-cell--3-col">
                     <image src="{{tape.image}}" height="250px"></image>
                 </header>
@@ -35,15 +36,44 @@
                     <div class="mdl-card__supporting-text">
                         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                             {{tape.input(class="mdl-textfield__input", pattern="^[1-9][0-9]?$|^100$")}}
-                            <label class="mdl-textfield__label" for="{{tape.input.id}}">Оценка..</label>
+                            <label class="mdl-textfield__label" for="{{tape.input.id}}">Оценка</label>
                             <span class="mdl-textfield__error">Возможно стоит прочитать текст в первом абзаце</span>
                         </div>
                     </div>
                 </div>
             </section>
         {% endfor %}
-        <div class="vote_card mdl-grid">
-            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect vote_card" type="submit">
+        <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-card--border v_card mdl-shadow--2dp through mdl-shadow--16dp">
+                <div class="mdl-card mdl-cell mdl-cell--12-col">
+                    <div class="mdl-card__supporting-text">
+                        <p>
+                            Пожайста, заполните эту форму, мы стараемся для вас. Оцените проект:
+                        </p>
+                        <div class="mdl-grid">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-cell mdl-cell--4-col">
+                                {{rf.usability(class="mdl-textfield__input")}}
+                                <label class="mdl-textfield__label" for="{{rf.usability.id}}">Удобство</label>
+                            </div>
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-cell mdl-cell--4-col">
+                                {{rf.usefulness(class="mdl-textfield__input")}}
+                                <label class="mdl-textfield__label" for="{{rf.usefulness.id}}">Полезность</label>
+                            </div>
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-cell mdl-cell--4-col">
+                                {{rf.designing(class="mdl-textfield__input")}}
+                                <label class="mdl-textfield__label" for="{{rf.designing.id}}">Дизайн</label>
+                            </div>
+                        </div>
+                        <div class="mdl-grid">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-cell mdl-cell--12-col">
+                                {{rf.comment(class="mdl-textfield__input")}}
+                                <label class="mdl-textfield__label" for="{{rf.comment.id}}">Комментарий</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        <div class="v_card mdl-grid">
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect v_card" type="submit">
                 Сохранить
             </button>
         </div>

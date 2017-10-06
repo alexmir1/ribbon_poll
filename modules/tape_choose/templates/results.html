@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="static/styles.css" xmlns="http://www.w3.org/1999/html">
+<main class="mdl-layout mdl-base mdl-js-layout mdl-layout__content">
+    <section class= "mdl-grid">
+        <div class="r_card mdl-cell--12-col mdl-card mdl-card--border mdl-shadow--2dp through mdl-shadow--16dp">
+            <div class="mdl-card__supporting-text"></div>
+            <p>
+                Нажмите на заголовок столбца для сортировки.
+            </p>
+            <div class="table-responsive" style="max-width: 100%; overflow: auto">
+                <table class="tablesorter mdl-data-table mdl-js-data-table mdl-cell--12-col" id="results">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">
+                                Цвет
+                            </th>
+                            {% for grade in grades %}
+                                <th colspan="2">
+                                    {{ grade }}
+                                </th>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            {% for grade in grades %}
+                                <th>
+                                    Ср. оценка
+                                </th>
+                                <th>
+                                    Кол-во оценок
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for color in colors %}
+                            <tr>
+                                <td style="background-color: #{{color.hex}}">
+                                    <a href="{{color.image_link}}" target="_blank">
+                                        {{ color.hex }}
+                                    </a>
+                                </td>
+                                {% for grade in grades %}
+                                    <td>
+                                        {% if marks[color.id][grade][0] is not none %}
+                                            {{ marks[color.id][grade][0] }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ marks[color.id][grade][1] }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    <section class="mdl-grid">
+        {% for grade in grades %}
+            <div class="r_card mdl-cell--4-col mdl-card mdl-card--border mdl-shadow--2dp through mdl-shadow--16dp">
+                <div class="mdl-card__supporting-text">
+                    <table class="tablesorter mdl-data-table mdl-js-data-table mdl-cell--12-col" id="{{'t' + grade}}">
+                        <caption>
+                            {{grade}}
+                        </caption>
+                        <thead>
+                        <tr>
+                            <th>
+                                Избиратель
+                            </th>
+                            <th>
+                                Кол-во оценок
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for voter in voters[grade].items() %}
+                                <tr>
+                                    <td>
+                                        {{voter[0]}}
+                                    </td>
+                                    <td>
+                                        {{voter[1]}}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endfor %}
+    </section>
+</main>
+<script
+  src="http://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<script type="text/javascript" src="static/tablesorter/js/jquery.tablesorter.js"></script>
+<script>
+        $(document).ready(function(){
+        $("#results").tablesorter({cssAsc: "mdl-data-table__header--sorted-ascending",
+                                   cssDesc: "mdl-data-table__header--sorted-descending"});
+        });
+</script>
+{% for grade in grades %}
+<script>
+        $(document).ready(function(){
+        $("#{{'t' + grade}}").tablesorter({sortList: [[0, 0]],
+                                           cssAsc: "mdl-data-table__header--sorted-ascending",
+                                           cssDesc: "mdl-data-table__header--sorted-descending"});
+        });
+</script>
+{% endfor %}
+{% endblock %}
