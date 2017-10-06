@@ -11,3 +11,9 @@ def before_request():
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+@app.errorhandler(500)
+def e500(error):
+    print(error)
+    return render_template('500.html')
