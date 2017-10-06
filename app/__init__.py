@@ -2,45 +2,32 @@
 app initialization
 """
 import importlib
-import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+from flask_mail import Mail
 
 
-db = SQLAlchemy()
-migrate = Migrate()
+app = Flask(__name__)
+app.config.from_object('config')
 
-lm = LoginManager()
+lm = LoginManager(app)
+lm.login_view = 'auth.login'
 
+db = SQLAlchemy(app)
 
-def create_app():
-    """
-    create and init Flask app and it's models
-    :return: Flask app
-    """
-    app = Flask(__name__)
-    app.config.from_object('config')
+migrate = Migrate(app, db)
 
-    migrate.init_app(app, db)
+mail = Mail(app)
 
-    lm.init_app(app)
-    lm.login_view = 'auth.login'
+for module in app.config['MODULES']:
+    module_name = importlib.import_module('modules.' + module)
 
-    db.init_app(app)
+    module_blueprint = getattr(module_name, module)
 
-    for module in app.config['MODULES']:
-        module_name = importlib.import_module('modules.' + module)
+    app.register_blueprint(module_blueprint, url_prefix='/' + module)
 
-        module_blueprint = getattr(module_name, module)
-
-        app.register_blueprint(module_blueprint, url_prefix='/' + module)
-
-    return app
-
-
-app = create_app()
 
 from app import views, models

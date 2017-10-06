@@ -10,37 +10,52 @@
             <p>
                 Обсуждать цвета бесполезно. Можно только голосовать.
             </p>
-            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-                <tbody>
-                    <tr>
-                        <td width="80px">
-                            Оценка цветов
-                        </td>
-                        <td width="80px"></td>
-                        <td width="80px">
-                            <a href="{{url_for('tape_choose.vote')}}">
-                                <i class="material-icons">web</i>
-                                Вход[1]
-                            </a>
-                        </td>
-                        <td width="80px">
-                            <i class="material-icons">web</i>
-                            Результаты
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive" style="max-width: 100%; overflow: auto;">
+                <table class="mdl-data-table mdl-js-data-table">
+                    <tbody>
+                        <tr>
+                            <td>
+                                Оценка цветов
+                            </td>
+                            <td></td>
+                            <td>
+                                <a href="{{url_for('tape_choose.vote')}}" target="_blank">
+                                    <i class="material-icons">web</i>
+                                    Вход[0]
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{url_for('tape_choose.results')}}" target="_blank">
+                                    <i class="material-icons">web</i>
+                                    Результаты
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <p>
                 Цвета и картинки взяты
-                <a href="https://promolenta.ru/ispolzuemye-vidy-lenty/satinovaya-lenta-s-gladkim-kraem/">отсюда</a>.
+                <a href="https://promolenta.ru/ispolzuemye-vidy-lenty/satinovaya-lenta-s-gladkim-kraem/" target="_blank">
+                    отсюда
+                </a>.
                 Косяк с коричневым тоже на их совести.
             </p>
             <p>
                 Цвета определены с помощью
-                <a href="https://www.easycalculation.com/colorconverter/pantone-to-hex-table.php">этой таблицы</a>.
+                <a href="https://www.easycalculation.com/colorconverter/pantone-to-hex-table.php" target="_blank">
+                    этой таблицы
+                </a>.
             </p>
             <p>
-                <a href="https://github.com/alexmir1/tape_choose">Код проекта на GitHub.</a>
+                Разработка сайта - <a href="https://vk.com/alexmir1" target="_blank">Алексей Миронов</a>,
+                <br>
+                парсера - <a href="https://vk.com/id218297558" target="_blank">Maksim Lavrik</a>
+            </p>
+            <p>
+                <a href="https://github.com/alexmir1/tape_choose" target="_blank">
+                    Код проекта на GitHub.
+                </a>
             </p>
         </div>
     </div>

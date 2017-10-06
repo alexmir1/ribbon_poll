@@ -13,6 +13,8 @@ class Color(db.Model):
 
     marks = db.relationship('Mark', backref='color', lazy='dynamic')
 
+    # final_marks = db.relationship('FinalMark', backref='color', lazy='dynamic')
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -48,3 +50,13 @@ class Mark(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     color_id = db.Column(db.Integer, db.ForeignKey('color.id'), nullable=False)
+
+'''
+may be faster
+class FinalMark(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    mark = db.Column(db.Float, nullable=True)
+    count_votes = db.Column(db.Integer, nullable=False, default=0)
+
+    color_id = db.Column(db.Integer, db.ForeignKey('color.id'), nullable=False)
+'''
