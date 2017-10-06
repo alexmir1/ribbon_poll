@@ -25,4 +25,4 @@ GRADES = ['b' + str(x) for x in range(1, 4)]
 
 PREFERRED_URL_SCHEME = 'http' if os.environ.get('HEROKU') is None else 'https'
 
-feedback_limit = 10
+FEEDBACK_LIMIT = 10
