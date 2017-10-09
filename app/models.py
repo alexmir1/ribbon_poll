@@ -27,18 +27,10 @@ class User(db.Model):
 
     @property
     def is_authenticated(self):
-        """
-        check if user authenticated know
-        :return: bool
-        """
         return True
 
     @property
     def is_active(self):
-        """
-        check if user active know
-        :return: bool
-        """
         return True
 
     def get_id(self):
@@ -56,7 +48,7 @@ class Mark(db.Model):
 may be faster
 class FinalMark(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    mark = db.Column(db.Float, nullable=True)
+    sum = db.Column(db.Integer, nullable=True)
     count_votes = db.Column(db.Integer, nullable=False, default=0)
 
     color_id = db.Column(db.Integer, db.ForeignKey('color.id'), nullable=False)

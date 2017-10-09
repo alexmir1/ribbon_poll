@@ -1,7 +1,8 @@
 .tape {
     color: silver;
-    font-size: 180%;
+    font-size: 50px;
     width: auto;
+    height: auto;
 }
 
 .v_card {

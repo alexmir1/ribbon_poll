@@ -61,33 +61,35 @@
         {% for grade in grades %}
             <div class="r_card mdl-cell--4-col mdl-card mdl-card--border mdl-shadow--2dp through mdl-shadow--16dp">
                 <div class="mdl-card__supporting-text">
-                    <table class="tablesorter mdl-data-table mdl-js-data-table mdl-cell--12-col" id="{{'t' + grade}}">
-                        <caption>
-                            {{grade}}
-                        </caption>
-                        <thead>
-                        <tr>
-                            <th>
-                                Избиратель
-                            </th>
-                            <th>
-                                Кол-во оценок
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            {% for voter in voters[grade].items() %}
-                                <tr>
-                                    <td>
-                                        {{voter[0]}}
-                                    </td>
-                                    <td>
-                                        {{voter[1]}}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    <div class="table-responsive" style="max-width: 100%; overflow: auto;">
+                        <table class="tablesorter mdl-data-table mdl-js-data-table mdl-cell--12-col" id="{{'t' + grade}}">
+                            <caption>
+                                {{grade}}
+                            </caption>
+                            <thead>
+                            <tr>
+                                <th>
+                                    Избиратель
+                                </th>
+                                <th>
+                                    Кол-во оценок
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% for voter in voters[grade].items() %}
+                                    <tr>
+                                        <td>
+                                            {{voter[0]}}
+                                        </td>
+                                        <td>
+                                            {{voter[1]}}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         {% endfor %}

@@ -170,3 +170,4 @@ venv.bak/
 app.db
 .idea/*
 
+/mail_config.py
