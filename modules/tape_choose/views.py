@@ -53,6 +53,7 @@ def results():
         for y in x.values():
             if y[1] > 0:
                 y[0] /= y[1]
+                y[0] = '{:.2f}'.format(y[0])
             else:
                 y[0] = None
     return render_template('results.html', colors=colors, grades=grades, marks=marks, voters=voters)
