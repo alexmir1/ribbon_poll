@@ -63,9 +63,9 @@ class Round(db.Model):
     starts_at = db.Column(db.DateTime)
 
     previous_id = db.Column(db.Integer, db.ForeignKey('round.id'))
-    next = db.relathionship('Round', backref='previous', lazy='dynamic')
-    current = db.relathionship('CurrentRound', backref='round', lazy='dynamic')
-    colors = db.relathionship('ComparingColors', backref='round', lazy='dynamic')
+    next = db.relationship('Round', backref='previous', lazy='dynamic', uselist=False)
+    current = db.relationship('CurrentRound', backref='round', lazy='dynamic')
+    colors = db.relationship('ComparingColors', backref='round', lazy='dynamic')
 
 
 class CurrentRound(db.Model):
@@ -73,7 +73,7 @@ class CurrentRound(db.Model):
     id текущих раундов
     """
     id = db.Column(db.Integer, primary_key=True)
-    grade = db.Column(db.String(4), index=True, nullable=False)
+    grade = db.Column(db.String(4), index=True, nullable=False, unique=True)
 
     round_id = db.Column(db.Integer, db.ForeignKey('round.id'))
 
