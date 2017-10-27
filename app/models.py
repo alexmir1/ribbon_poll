@@ -7,16 +7,20 @@ from app import db
 
 
 class Color(db.Model):
+    """
+    Цвет
+    """
     id = db.Column(db.Integer, primary_key=True)
     image_link = db.Column(db.String(128), unique=True)
     hex = db.Column(db.String(8), nullable=False)
 
     marks = db.relationship('Mark', backref='color', lazy='dynamic')
 
-    # final_marks = db.relationship('FinalMark', backref='color', lazy='dynamic')
-
 
 class User(db.Model):
+    """
+    Пользователь
+    """
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), index=True, unique=True, nullable=False)
     grade = db.Column(db.String(4), index=True, nullable=False)
@@ -24,6 +28,7 @@ class User(db.Model):
     feedback_count = db.Column(db.Integer, nullable=False, default=0)
 
     marks = db.relationship('Mark', backref='user', lazy='dynamic')
+    choices = db.relationship('Choices', backref='user', lazy='dynamic')
 
     @property
     def is_authenticated(self):
@@ -38,18 +43,59 @@ class User(db.Model):
 
 
 class Mark(db.Model):
+    """
+    Старые оценки от 1 до 100.
+    Нужны чтобы пользователям, поставившим всем цветам различные оценки не нужно было ничего делать.
+    """
     id = db.Column(db.Integer, primary_key=True)
     mark = db.Column(db.Integer, nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     color_id = db.Column(db.Integer, db.ForeignKey('color.id'), nullable=False)
 
-'''
-may be faster
-class FinalMark(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    sum = db.Column(db.Integer, nullable=True)
-    count_votes = db.Column(db.Integer, nullable=False, default=0)
 
-    color_id = db.Column(db.Integer, db.ForeignKey('color.id'), nullable=False)
-'''
+class Round(db.Model):
+    """
+    Раунд голосования
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    grade = db.Column(db.String(4), index=True, nullable=False)
+    starts_at = db.Column(db.DateTime)
+
+    previous_id = db.Column(db.Integer, db.ForeignKey('round.id'))
+    next = db.relathionship('Round', backref='previous', lazy='dynamic')
+    current = db.relathionship('CurrentRound', backref='round', lazy='dynamic')
+    colors = db.relathionship('ComparingColors', backref='round', lazy='dynamic')
+
+
+class CurrentRound(db.Model):
+    """
+    id текущих раундов
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    grade = db.Column(db.String(4), index=True, nullable=False)
+
+    round_id = db.Column(db.Integer, db.ForeignKey('round.id'))
+
+
+class ComparingColors(db.Model):
+    """
+    Пара сравниваемых цветов
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    first_color_id = db.Column(db.Integer, db.ForeignKey('color.id'), nullable=False)
+    second_color_id = db.Column(db.Integer, db.ForeignKey('color.id'), nullable=True)
+
+    round_id = db.Column(db.Integer, db.ForeignKey('round.id'), nullable=False, index=True)
+    choices = db.relationship('Choices', backref='comparing_colors', lazy='dynamic')
+
+
+class Choices(db.Model):
+    """
+    Выбор пользователей
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    selected = db.Column(db.Integer, nullable=False)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    comparing_colors_id = db.Column(db.Integer, db.ForeignKey('comparing_colors.id'), nullable=False)
