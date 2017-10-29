@@ -1,11 +1,48 @@
+import datetime
 from flask import render_template, g, redirect, url_for, request
 from flask_login import login_required
 from app import db, app
-from app.models import Mark, Color, User
+from app.models import Mark, Color, CurrentRound, Round, Choices, ComparingColors
 from . import tape_choose, forms
 from .ColorInput import ColorInput
 from modules.feedback.form import Feedback
 from modules.feedback.send_feedback import send_feedback, feedback_available
+
+
+@tape_choose.before_request
+def update_current_round():
+    grades = app.config['GRADES']
+    for grade in grades:
+        current_round = CurrentRound.query.filter_by(grade=grade).first()
+        participants = []
+        if current_round is not None and current_round.round.next is not None and\
+                        datetime.datetime.now() >= current_round.round.next.starts_at:
+            for colors in ComparingColors.query.filter_by(round=current_round.round).all():
+                if colors.second_color_id is not None:
+                    first_cnt = 0
+                    second_cnt = 0
+                    for choice in Choices.query.filter_by(comparing_colors=colors).all():
+                        if choice.selected == 0:
+                            first_cnt += 1
+                        else:
+                            second_cnt += 1
+                    if first_cnt >= second_cnt:
+                        participants.append(colors.first_color_id)
+                    if first_cnt <= second_cnt:
+                        participants.append(colors.second_color_id)
+                else:
+                    participants.append(colors.first_color_id)
+            current_round.round = current_round.round.next
+        elif current_round is None:
+            first_round = Round.query.filter_by(grade=grade).first()
+            if first_round is not None:
+                db.session.add(CurrentRound(grade=grade, round=first_round))
+                db.session.commit()
+            participants += map(lambda x: x.id, Color.query.all())
+
+        for i in range(0, len(participants), 2):
+            db.session.add(ComparingColors(first_color_id=participants[i], second_color_id=participants[i + 1],
+                                           round=current_round.round))
 
 
 @tape_choose.route('/vote', methods=['GET', 'POST'])

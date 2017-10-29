@@ -75,7 +75,7 @@ class CurrentRound(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     grade = db.Column(db.String(4), index=True, nullable=False, unique=True)
 
-    round_id = db.Column(db.Integer, db.ForeignKey('round.id'))
+    round_id = db.Column(db.Integer, db.ForeignKey('round.id'), nullable=False)
 
 
 class ComparingColors(db.Model):
