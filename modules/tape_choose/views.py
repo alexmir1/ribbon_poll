@@ -2,7 +2,7 @@ import datetime
 from flask import render_template, g, redirect, url_for, request
 from flask_login import login_required
 from app import db, app
-from app.models import Mark, Color, CurrentRound, Round, Choices, ComparingColors
+from app.models import Mark, Color, CurrentRound, Round, Choices, ComparingColors, User
 from . import tape_choose, forms
 from .ColorInput import ColorInput
 from modules.feedback.form import Feedback
@@ -15,8 +15,9 @@ def update_current_round():
     for grade in grades:
         current_round = CurrentRound.query.filter_by(grade=grade).first()
         participants = []
-        if current_round is not None and current_round.round.next is not None and\
-                        datetime.datetime.now() >= current_round.round.next.starts_at:
+        if current_round is not None and current_round.round.next is not None and \
+                current_round.round.next[0].starts_at is not None and\
+                datetime.datetime.now() >= current_round.round.next[0].starts_at:
             for colors in ComparingColors.query.filter_by(round=current_round.round).all():
                 if colors.second_color_id is not None:
                     first_cnt = 0
@@ -32,17 +33,27 @@ def update_current_round():
                         participants.append(colors.second_color_id)
                 else:
                     participants.append(colors.first_color_id)
-            current_round.round = current_round.round.next
+            current_round.round = current_round.round.next[0]
         elif current_round is None:
             first_round = Round.query.filter_by(grade=grade).first()
             if first_round is not None:
-                db.session.add(CurrentRound(grade=grade, round=first_round))
-                db.session.commit()
-            participants += map(lambda x: x.id, Color.query.all())
+                current_round = CurrentRound(grade=grade, round=first_round)
+                db.session.add(current_round)
+                #db.session.commit()
+                participants += list(map(lambda x: x.id, Color.query.all()))
 
-        for i in range(0, len(participants), 2):
-            db.session.add(ComparingColors(first_color_id=participants[i], second_color_id=participants[i + 1],
-                                           round=current_round.round))
+        for i in range(1, len(participants), 2):
+            colors = ComparingColors(first_color_id=participants[i - 1], second_color_id=participants[i],
+                                     round=current_round.round)
+            db.session.add(colors)
+            for user in User.query.filter_by(grade=grade):
+                mark1 = Mark.query.filter_by(user=user, color_id=colors.first_color_id).first()
+                mark2 = Mark.query.filter_by(user=user, color_id=colors.second_color_id).first()
+                if mark1 is not None and mark2 is not None and mark1.mark != mark2.mark:
+                    db.session.add(Choices(comparing_colors=colors, selected=int(mark2.mark > mark1.mark), user=user))
+        if len(participants) % 2 == 1:
+            db.session.add(ComparingColors(first_color_id=participants[-1], round=current_round.round))
+        db.session.commit()
 
 
 @tape_choose.route('/vote', methods=['GET', 'POST'])

@@ -63,7 +63,7 @@ class Round(db.Model):
     starts_at = db.Column(db.DateTime)
 
     previous_id = db.Column(db.Integer, db.ForeignKey('round.id'))
-    next = db.relationship('Round', backref='previous', lazy='dynamic', uselist=False)
+    previous = db.relationship('Round', backref='next', uselist=False, remote_side=[id])
     current = db.relationship('CurrentRound', backref='round', lazy='dynamic')
     colors = db.relationship('ComparingColors', backref='round', lazy='dynamic')
 
