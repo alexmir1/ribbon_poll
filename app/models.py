@@ -1,6 +1,6 @@
 """
 db models
-"""
+    """
 
 
 from app import db
@@ -49,7 +49,6 @@ class Mark(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     mark = db.Column(db.Integer, nullable=False)
-
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     color_id = db.Column(db.Integer, db.ForeignKey('color.id'), nullable=False)
 

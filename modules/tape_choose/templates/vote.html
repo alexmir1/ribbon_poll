@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <link rel="stylesheet" href="static/styles.css">
+
 <main class="mdl-layout mdl-base mdl-js-layout mdl-layout__content">
     <form action="" method="post">
         {{ form.hidden_tag() }}
@@ -13,30 +14,39 @@
                 </div>
                 <div class="mdl-card__supporting-text">
                     <p>
-                        Для каждого цвета дайте оценку от 1 до 100: насколько сильно вы хотите видеть этот цвет на выпускном
-                        (чем больше, тем сильнее). Оставьте поле пустым, если доверяете мнению одноклассников по этому цвету.
-                        <b>В форме нет ни одного обязательного поля.</b>
+                        ВЫБОРЫ, ВЫБОРЫ!
                     </p>
                     <p>
-                        При прохождении на телефоне рекомендуется повернуть его горизонтально.
+                        При прохождении на телефоне рекомендуется кинуть его об стену.
                     </p>
                 </div>
             </div>
         </section>
 
-        {% for tape in tapes %}
+        {% for pair in pairs %}
             <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-card--border v_card mdl-shadow--2dp through mdl-shadow--16dp">
                 <header class="mdl-cell mdl-cell--3-col">
-                    <image src="{{tape.image}}" height="250px"></image>
+                    <image src="{{pair.first.image}}" height="250px"></image>
                 </header>
                 <div class="mdl-card mdl-cell mdl-cell--9-col">
-                    <div class="mdl-card__supporting-text mdl-card--border tape" style="background-color: #{{tape.hex}}">
+                    <div class="mdl-card__supporting-text mdl-card--border tape" style="background-color: #{{pair.first.hex}}">
                         <p class="tape">ВЫПУСКНИК 2К!8</p>
                     </div>
                     <div class="mdl-card__supporting-text">
                         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            {{tape.input(class="mdl-textfield__input", pattern="^[1-9][0-9]?$|^100$")}}
-                            <label class="mdl-textfield__label" for="{{tape.input.id}}">Оценка</label>
+                            {{pair.first.input(class="mdl-textfield__input", pattern="^[1-9][0-9]?$|^100$")}}
+                            <label class="mdl-textfield__label" for="{{pair.first.input.id}}">Оценка</label>
+                            <span class="mdl-textfield__error">Возможно стоит прочитать текст в первом абзаце</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mdl-card__supporting-text mdl-card--border tape" style="background-color: #{{pair.second.hex}}">
+                        <p class="tape">ВЫПУСКНИК 2К!8</p>
+                    </div>
+                    <div class="mdl-card__supporting-text">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            {{pair.second.input(class="mdl-textfield__input", pattern="^[1-9][0-9]?$|^100$")}}
+                            <label class="mdl-textfield__label" for="{{pair.second.input.id}}">Оценка</label>
                             <span class="mdl-textfield__error">Возможно стоит прочитать текст в первом абзаце</span>
                         </div>
                     </div>
@@ -85,4 +95,5 @@
         </div>
     </form>
 </main>
+
 {% endblock %}
