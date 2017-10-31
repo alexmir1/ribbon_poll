@@ -2,57 +2,57 @@
 {% block content %}
 <link rel="stylesheet" href="static/styles.css">
 
+<script>
+    var button_first_ids = [{% for pair in pairs %} {{pair.first.id}}, {% endfor %}];
+    var button_second_ids = [{% for pair in pairs %} {{pair.second.id}}, {% endfor %}];
+    var results = new Array(button_first_ids.length);
+
+    for (var i = 0; i < button_first_ids.length; i++) {
+        var cur = document.getElementById(button_first_ids[i].toString());
+        cur.addEventListener("click", function() {
+             results[i] = 1;
+             // change color too
+        });
+    }
+
+    for (var i = 0; i < button_second_ids.length; i++) {
+        var cur = document.getElementById(button_second_ids[i].toString());
+        cur.addEventListener("click", function() {
+             results[i] = 2;
+             // change color too
+        });
+    }
+</script>
+
 <main class="mdl-layout mdl-base mdl-js-layout mdl-layout__content">
     <form action="" method="post">
         {{ form.hidden_tag() }}
-        <section class="v_card mdl-grid mdl-shadow--2dp mdl-card--border">
-            <div class="mdl-card mdl-cell mdl-cell--12-col mdl-card--border">
-                <div class="mdl-card__title">
-                    <h2 class="mdl-card__title-text">
-                        Информация
-                    </h2>
-                </div>
-                <div class="mdl-card__supporting-text">
-                    <p>
-                        ВЫБОРЫ, ВЫБОРЫ!
-                    </p>
-                    <p>
-                        При прохождении на телефоне рекомендуется кинуть его об стену.
-                    </p>
-                </div>
-            </div>
-        </section>
+        <h1 align="center">Голосование</h1>
+        <info>
+            Голосование проходит по олимпийской системе. Для каждой пары цветов выберите тот, что вам нравится больше.
+            Победивший в каждой паре цвет пройдет в следующий этап.
+        </info>
 
         {% for pair in pairs %}
             <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-card--border v_card mdl-shadow--2dp through mdl-shadow--16dp">
                 <header class="mdl-cell mdl-cell--3-col">
                     <image src="{{pair.first.image}}" height="250px"></image>
                 </header>
-                <div class="mdl-card mdl-cell mdl-cell--9-col">
-                    <div class="mdl-card__supporting-text mdl-card--border tape" style="background-color: #{{pair.first.hex}}">
-                        <p class="tape">ВЫПУСКНИК 2К!8</p>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            {{pair.first.input(class="mdl-textfield__input", pattern="^[1-9][0-9]?$|^100$")}}
-                            <label class="mdl-textfield__label" for="{{pair.first.input.id}}">Оценка</label>
-                            <span class="mdl-textfield__error">Возможно стоит прочитать текст в первом абзаце</span>
-                        </div>
-                    </div>
-                    
-                    <div class="mdl-card__supporting-text mdl-card--border tape" style="background-color: #{{pair.second.hex}}">
-                        <p class="tape">ВЫПУСКНИК 2К!8</p>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            {{pair.second.input(class="mdl-textfield__input", pattern="^[1-9][0-9]?$|^100$")}}
-                            <label class="mdl-textfield__label" for="{{pair.second.input.id}}">Оценка</label>
-                            <span class="mdl-textfield__error">Возможно стоит прочитать текст в первом абзаце</span>
-                        </div>
-                    </div>
+                <div class="mdl-card__supporting-text mdl-card--border tape" style="background-color: #{{pair.first.hex}}">
+                    <p class="tape">ВЫПУСКНИК 2К!8</p>
                 </div>
+                <button id="{{pair.first.id}}">Click 1</button>
+                    
+                <header class="mdl-cell mdl-cell--3-col">
+                    <image src="{{pair.second.image}}" height="250px"></image>
+                </header>
+                <div class="mdl-card__supporting-text mdl-card--border tape" style="background-color: #{{pair.second.hex}}">
+                    <p class="tape">ВЫПУСКНИК 2К!8</p>
+                </div>
+                <button id="{{pair.second.id}}">Click 2</button>
             </section>
         {% endfor %}
+
         <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-card--border v_card mdl-shadow--2dp through mdl-shadow--16dp">
                 <div class="mdl-card mdl-cell mdl-cell--12-col">
                     <div class="mdl-card__supporting-text">
