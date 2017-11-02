@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="static/styles.css" xmlns="http://www.w3.org/1999/html">
+<header class="mdl-layout__header mdl-layout__header--scroll">
+    <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+        {% for grade in grades %}
+            <a href="{{url_for('tape_choose.result_in_grade', grade=grade)}}" class="mdl-layout__tab">{{grade}}</a>
+        {% endfor %}
+    </div>
+</header>
+{% block result %}{% endblock %}
+{% endblock %}

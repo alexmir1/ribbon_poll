@@ -87,6 +87,8 @@ class ComparingColors(db.Model):
     second_color_id = db.Column(db.Integer, db.ForeignKey('color.id'), nullable=True)
 
     round_id = db.Column(db.Integer, db.ForeignKey('round.id'), nullable=False, index=True)
+    first_color = db.relationship('Color', uselist=False, foreign_keys=[first_color_id])
+    second_color = db.relationship('Color', uselist=False, foreign_keys=[second_color_id])
     choices = db.relationship('Choices', backref='comparing_colors', lazy='dynamic')
 
 

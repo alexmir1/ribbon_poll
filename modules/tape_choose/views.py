@@ -15,7 +15,7 @@ def update_current_round():
     for grade in grades:
         current_round = CurrentRound.query.filter_by(grade=grade).first()
         participants = []
-        if current_round is not None and current_round.round.next is not None and \
+        if current_round is not None and len(current_round.round.next) == 1 and \
                 current_round.round.next[0].starts_at is not None and\
                 datetime.datetime.now() >= current_round.round.next[0].starts_at:
             for colors in ComparingColors.query.filter_by(round=current_round.round).all():
@@ -39,7 +39,6 @@ def update_current_round():
             if first_round is not None:
                 current_round = CurrentRound(grade=grade, round=first_round)
                 db.session.add(current_round)
-                #db.session.commit()
                 participants += list(map(lambda x: x.id, Color.query.all()))
 
         for i in range(1, len(participants), 2):
@@ -83,25 +82,23 @@ def vote():
         return render_template('vote.html', form=form, tapes=colors, rf=rf, feedback_available=feedback_available())
 
 
-@tape_choose.route('/results')
-def results():
-    colors = Color.query.all()
+@tape_choose.route('/results/<grade>')
+def result_in_grade(grade):
     grades = app.config['GRADES']
-    marks = dict([(color.id, dict([(grade, [0, 0]) for grade in grades])) for color in colors])
-    db_marks = Mark.query.all()
-    voters = dict([(grade, dict()) for grade in grades])
-    for mark in db_marks:
-        try:
-            marks[mark.color_id][mark.user.grade][0] += mark.mark
-            marks[mark.color_id][mark.user.grade][1] += 1
-            voters[mark.user.grade][mark.user.name] = voters[mark.user.grade].get(mark.user.name, 0) + 1
-        except KeyError as error:
-            print(error)
-    for x in marks.values():
-        for y in x.values():
-            if y[1] > 0:
-                y[0] /= y[1]
-                y[0] = '{:.2f}'.format(y[0])
-            else:
-                y[0] = None
-    return render_template('results.html', colors=colors, grades=grades, marks=marks, voters=voters)
+    rounds = Round.query.filter_by(grade=grade).all()
+    marks = dict()
+    voters = dict()
+    for round in rounds:
+        marks[round.id] = dict()
+        voters[round.id] = dict()
+        for colors in round.colors:
+            marks[round.id][colors.first_color_id] = 0
+            marks[round.id][colors.second_color_id] = 0
+            for choice in colors.choices:
+                if choice.selected == 0:
+                    marks[round.id][colors.first_color_id] += 1
+                else:
+                    marks[round.id][colors.second_color_id] += 1
+                voters[round.id][choice.user.name] = voters[round.id].get(choice.user.name, 0) + 1
+    return render_template('result_in_grade.html', grades=grades, marks=marks, voters=voters, rounds=rounds,
+                           rounds_number=len(rounds))
