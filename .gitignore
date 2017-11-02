@@ -171,3 +171,6 @@ app.db
 .idea/*
 
 /mail_config.py
+
+client_secret*
+
