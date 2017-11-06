@@ -87,6 +87,12 @@ def vote():
         return render_template('vote.html', form=form, tapes=colors, rf=rf, feedback_available=feedback_available())
 
 
+@tape_choose.route('/results')
+def results():
+    grades = app.config['GRADES']
+    return render_template('results.html', grades=grades)
+
+
 @tape_choose.route('/results/<grade>')
 def result_in_grade(grade):
     grades = app.config['GRADES']
@@ -106,4 +112,4 @@ def result_in_grade(grade):
                     marks[round.id][colors.second_color_id] += 1
                 voters[round.id][choice.user.name] = voters[round.id].get(choice.user.name, 0) + 1
     return render_template('result_in_grade.html', grades=grades, marks=marks, voters=voters, rounds=rounds,
-                           rounds_number=len(rounds))
+                           rounds_number=len(rounds), cur_grade=grade)

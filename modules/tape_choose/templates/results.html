@@ -1,0 +1,18 @@
+{% extends "results_base.html" %}
+{% block result %}
+<main class="mdl-main mdl-layout__content">
+    <section class="mdl-grid">
+        <div class="mdl-card mdl-card--border mdl-shadow--2dp through mdl-shadow--16dp" style="height: auto; width: auto; margin: auto">
+            <div class="mdl-card__supporting-text">
+                Выберете класс
+            </div>
+            <div class="mdl-card__actions">
+                {% for grade in grades %}
+                    <a href="{{url_for('tape_choose.result_in_grade', grade=grade)}}" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">{{grade}}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</main>
+
+{% endblock %}
