@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<link rel="stylesheet" href="static/styles.css">
+<link rel="stylesheet" href="{{url_for('tape_choose.static', filename='styles.css')}}">
 
 <main class="mdl-layout mdl-base mdl-js-layout mdl-layout__content">
     <form action="" method="post">
@@ -14,43 +14,41 @@
                 </div>
                 <div class="mdl-card__supporting-text">
                     <p>
-                        ВЫБОРЫ, ВЫБОРЫ!
+                        Для каждой пары цветов Вы можете выбрать тот, который нравиться Вам больше.
+                        <b>В форме нет ни одного обязательного поля.</b>
                     </p>
                     <p>
-                        При прохождении на телефоне рекомендуется кинуть его об стену.
+                        При прохождении на телефоне рекомендуется повернуть его горизонтально.
                     </p>
                 </div>
             </div>
         </section>
 
         {% for pair in pairs %}
-            <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-card--border v_card mdl-shadow--2dp through mdl-shadow--16dp">
-                <header class="mdl-cell mdl-cell--3-col">
-                    <image src="{{pair.first.image}}" height="250px"></image>
-                </header>
-                <div class="mdl-card mdl-cell mdl-cell--9-col">
-                    <div class="mdl-card__supporting-text mdl-card--border tape" style="background-color: #{{pair.first.hex}}">
-                        <p class="tape">ВЫПУСКНИК 2К!8</p>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            {{pair.first.input(class="mdl-textfield__input", pattern="^[1-9][0-9]?$|^100$")}}
-                            <label class="mdl-textfield__label" for="{{pair.first.input.id}}">Оценка</label>
-                            <span class="mdl-textfield__error">Возможно стоит прочитать текст в первом абзаце</span>
+            <section class="mdl-card mdl-card--border v_card mdl-shadow--2dp through mdl-shadow--16dp">
+                <script>
+                    var a{{ pair.id }}, b{{ pair.id }};
+                    function check{{ pair.id }}(c) {
+                        if (a{{ pair.id }} != c) {b{{ pair.id }} = 0;a{{ pair.id }} = c};
+                        b{{ pair.id }} ^= 1;
+                        setTimeout(function() {c.checked = b{{ pair.id }}}, 2000);
+                    };
+                </script>
+                {% for i in range(2) %}
+                    <label class="mdl-card__supporting-text mdl-radio mdl-js-radio mdl-js-ripple-effect" for="{{pair.inputs[i].id}}" style="height: auto; margin: auto">
+                        {{pair.inputs[i](class="mdl-radio__button", onClick="check{}(this);".format(pair.id))}}
+                        <div class="mdl-grid mdl-grid--no-spacing mdl-radio__label">
+                            <div class="mdl-cell mdl-cell--3-col">
+                                <img src="{{pair.colors[i].image_link}}" height="250px">
+                            </div>
+                            <div class="mdl-cell mdl-cell--9-col">
+                                <p class="tape" style="background-color: #{{pair.colors[i].hex}}">
+                                    ВЫПУСКНИК 2К!8
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="mdl-card__supporting-text mdl-card--border tape" style="background-color: #{{pair.second.hex}}">
-                        <p class="tape">ВЫПУСКНИК 2К!8</p>
-                    </div>
-                    <div class="mdl-card__supporting-text">
-                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            {{pair.second.input(class="mdl-textfield__input", pattern="^[1-9][0-9]?$|^100$")}}
-                            <label class="mdl-textfield__label" for="{{pair.second.input.id}}">Оценка</label>
-                            <span class="mdl-textfield__error">Возможно стоит прочитать текст в первом абзаце</span>
-                        </div>
-                    </div>
-                </div>
+                    </label>
+                {% endfor %}
             </section>
         {% endfor %}
         <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-card--border v_card mdl-shadow--2dp through mdl-shadow--16dp">

@@ -19,8 +19,8 @@ def update_current_round():
         current_round = CurrentRound.query.filter_by(grade=grade).first()
         participants = []
         if current_round is not None and len(current_round.round.next) == 1 and \
-                current_round.round.next[0].starts_at is not None and\
-                datetime.datetime.now() >= current_round.round.next[0].starts_at:
+                        current_round.round.next[0].starts_at is not None and \
+                        datetime.datetime.now() >= current_round.round.next[0].starts_at:
             # handle the case: next round should be started already
             for colors in ComparingColors.query.filter_by(round=current_round.round).all():
                 if colors.second_color_id is not None:
@@ -63,28 +63,43 @@ def update_current_round():
 @tape_choose.route('/vote', methods=['GET', 'POST'])
 @login_required
 def vote():
-    colors = []
-    for color in Color.query.all():
-        colors.append(ColorInput(hex=color.hex, image=color.image_link, id=color.id))
+    current_round = CurrentRound.query.filter_by(grade=g.user.grade).first()
+    if current_round is not None:
+        return redirect(url_for('tape_choose.vote_in_round', round_id=current_round.round_id))
+    else:
+        return "Нет доступных раундов"
 
+
+@tape_choose.route('/vote/<int:round_id>', methods=['GET', 'POST'])
+@login_required
+def vote_in_round(round_id):
+    if CurrentRound.query.filter_by(grade=g.user.grade).first() is None or \
+                    CurrentRound.query.filter_by(grade=g.user.grade).first().round_id != round_id:
+        return "Раунд недоступен"
+    colors = []
+    for comparing in ComparingColors.query.filter_by(round_id=round_id).all():
+        if comparing.second_color_id is not None:
+            colors.append(ColorInput(comparing))
     form = forms.gen_vote_form(colors)
     rf = Feedback()
     if form.validate_on_submit():
         send_feedback(rf, request.headers)
-        for mark in Mark.query.filter_by(user=g.user).all():
-            db.session.delete(mark)
+        for comparing in ComparingColors.query.filter_by(round_id=round_id).all():
+            for choice in Choices.query.filter_by(user=g.user, comparing_colors=comparing).all():
+                db.session.delete(choice)
         for color in colors:
-            if color.input.data is not None:
-                db.session.add(Mark(user_id=g.user.id, color_id=color.id, mark=color.input.data))
+            if color.input.data != 'None':
+                db.session.add(Choices(user=g.user, comparing_colors_id=int(color.id), selected=int(color.input.data)))
         db.session.commit()
         return redirect(url_for('index'))
     else:
         if request.method == 'GET':
             for color in colors:
-                mark = Mark.query.filter_by(user_id=g.user.id, color_id=color.id).first()
-                if mark is not None:
-                    color.input.data = mark.mark
-        return render_template('vote.html', form=form, tapes=colors, rf=rf, feedback_available=feedback_available())
+                choice = Choices.query.filter_by(user=g.user, comparing_colors_id=int(color.id)).first()
+                if choice is not None:
+                    color.input.data = str(choice.selected)
+                    color.inputs[choice.selected].checked = True
+        return render_template('vote.html', form=form, pairs=colors, rf=rf, feedback_available=feedback_available())
 
 
 @tape_choose.route('/results')

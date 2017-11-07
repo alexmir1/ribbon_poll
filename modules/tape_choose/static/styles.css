@@ -1,8 +1,11 @@
 .tape {
     color: silver;
     font-size: 50px;
-    width: auto;
-    height: auto;
+    height: 100px;
+    padding: 20px;
+    line-height: 50px;
+    word-break: keep-all;
+    overflow: auto;
 }
 
 .v_card {
@@ -12,7 +15,7 @@
     padding: 20px;
     width: auto;
     height: auto;
-    max-width: 800px;
+    max-width: 900px;
 }
 
 .r_card {

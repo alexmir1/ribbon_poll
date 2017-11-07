@@ -1,6 +1,4 @@
 class ColorInput:
-    def __init__(self, id, hex, image):
-        self.id = id
-        self.hex = hex
-        self.image = image
-        self.input = None
+    def __init__(self, colors):
+        self.id = str(colors.id)
+        self.colors = [colors.first_color, colors.second_color]
