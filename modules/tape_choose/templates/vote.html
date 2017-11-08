@@ -14,7 +14,7 @@
                 </div>
                 <div class="mdl-card__supporting-text">
                     <p>
-                        Для каждой пары цветов Вы можете выбрать тот, который нравиться Вам больше.
+                        Для каждой пары цветов Вы можете выбрать тот, который нравиться Вам больше. Выбирать можно нажатием на ленту/кружок. Вы можете отменить выбор повторным нажатием на элемент.
                         <b>В форме нет ни одного обязательного поля.</b>
                     </p>
                     <p>
@@ -26,18 +26,10 @@
 
         {% for pair in pairs %}
             <section class="mdl-card mdl-card--border v_card mdl-shadow--2dp through mdl-shadow--16dp">
-                <script>
-                    var a{{ pair.id }}, b{{ pair.id }};
-                    function check{{ pair.id }}(c) {
-                        if (a{{ pair.id }} != c) {b{{ pair.id }} = 0;a{{ pair.id }} = c};
-                        b{{ pair.id }} ^= 1;
-                        setTimeout(function() {c.checked = b{{ pair.id }}}, 2000);
-                    };
-                </script>
                 {% for i in range(2) %}
-                    <label class="mdl-card__supporting-text mdl-radio mdl-js-radio mdl-js-ripple-effect" for="{{pair.inputs[i].id}}" style="height: auto; margin: auto">
+                    <label class="mdl-card__supporting-text mdl-radio mdl-js-radio mdl-js-ripple-effect" for="{{pair.inputs[i].id}}" style="height: auto; margin: auto;">
                         {{pair.inputs[i](class="mdl-radio__button", onClick="check{}(this);".format(pair.id))}}
-                        <div class="mdl-grid mdl-grid--no-spacing mdl-radio__label">
+                        <div class="mdl-grid mdl-grid--no-spacing">
                             <div class="mdl-cell mdl-cell--3-col">
                                 <img src="{{pair.colors[i].image_link}}" height="250px">
                             </div>
@@ -50,6 +42,19 @@
                     </label>
                 {% endfor %}
             </section>
+                <script>
+                    var a{{ pair.id }}, b{{ pair.id }} = 1;
+                    {% for i in range(2) %}
+                        {% if pair.inputs[i].checked %}
+                            a{{ pair.id }} = document.getElementById("{{pair.inputs[i].id}}");
+                        {% endif %}
+                    {% endfor %}
+                    function check{{ pair.id }}(c) {
+                        if (a{{ pair.id }} != c) {b{{ pair.id }} = 0;a{{ pair.id }} = c};
+                        b{{ pair.id }} ^= 1;
+                        if (b{{ pair.id }} == 0) c.parentElement.MaterialRadio.uncheck();
+                    };
+                </script>
         {% endfor %}
         <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-card--border v_card mdl-shadow--2dp through mdl-shadow--16dp">
                 <div class="mdl-card mdl-cell mdl-cell--12-col">

@@ -26,3 +26,5 @@ GRADES = ['b' + str(x) for x in range(1, 4)]
 PREFERRED_URL_SCHEME = 'http' if os.environ.get('HEROKU') is None else 'https'
 
 FEEDBACK_LIMIT = 10
+
+DATE_TIME_FORMAT = '%d.%m.%y %H:%M'
