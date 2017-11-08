@@ -1,5 +1,4 @@
 import datetime
-import pytz
 from flask import render_template, g, redirect, url_for, request
 from flask_login import login_required
 from app import db, app
@@ -8,8 +7,6 @@ from . import tape_choose, forms
 from .ColorInput import ColorInput
 from modules.feedback.form import Feedback
 from modules.feedback.send_feedback import send_feedback, feedback_available
-
-moscow_time_zone = pytz.timezone('Europe/Moscow')
 
 
 @tape_choose.before_request
@@ -23,7 +20,7 @@ def update_current_round():
         participants = []
         if current_round is not None and len(current_round.round.next) == 1 and \
             current_round.round.next[0].starts_at is not None and \
-                moscow_time_zone.localize(datetime.datetime.utcnow()) >= current_round.round.next[0].starts_at:
+                datetime.datetime.utcnow() >= current_round.round.next[0].starts_at:
             # handle the case: next round should be started already
             for colors in ComparingColors.query.filter_by(round=current_round.round).all():
                 if colors.second_color_id is not None:
@@ -43,7 +40,7 @@ def update_current_round():
             current_round.round = current_round.round.next[0]
         elif current_round is None:
             # handle the case: the first round is not still started
-            first_round = Round.query.filter_by(grade=grade).first()
+            first_round = Round.query.filter_by(grade=grade, previous_id=None).first()
             if first_round is not None:
                 current_round = CurrentRound(grade=grade, round=first_round)
                 db.session.add(current_round)
@@ -131,4 +128,4 @@ def result_in_grade(grade):
                 voters[round.id][choice.user.name] = voters[round.id].get(choice.user.name, 0) + 1
     return render_template('result_in_grade.html', grades=grades, marks=marks, voters=voters, rounds=rounds,
                            rounds_number=len(rounds), cur_grade=grade,
-                           current_time=moscow_time_zone.localize(datetime.datetime.utcnow()))
+                           current_time=datetime.datetime.utcnow())

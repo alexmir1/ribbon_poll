@@ -3,6 +3,8 @@
 """
 
 import os
+import pytz
+import datetime
 from mail_config import *
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -27,4 +29,8 @@ PREFERRED_URL_SCHEME = 'http' if os.environ.get('HEROKU') is None else 'https'
 
 FEEDBACK_LIMIT = 10
 
-DATE_TIME_FORMAT = '%d.%m.%y %H:%M'
+
+def DATE_TIME_OUTPUT(date):
+    DATE_TIME_FORMAT = '%d.%m.%y %H:%M'
+    TIME_ZONE = pytz.timezone('Europe/Moscow')
+    return (TIME_ZONE.utcoffset(date) + date).strftime(DATE_TIME_FORMAT)

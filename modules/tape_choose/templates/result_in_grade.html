@@ -16,7 +16,7 @@
                     <tr>
                         {% for round in rounds %}
                             <th>
-                                Начало: {{round.starts_at.strftime(config['DATE_TIME_FORMAT'])}}
+                                Начало: {{config['DATE_TIME_OUTPUT'](round.starts_at)}}
                             </th>
                         {% endfor %}
                     </tr>
@@ -84,7 +84,7 @@
                 </table>
             </div>
             <p>
-                Текущее время: {{current_time.strftime(config['DATE_TIME_FORMAT'])}}
+                Текущее время: {{config['DATE_TIME_OUTPUT'](current_time)}}
             </p>
         </div>
     </section>
