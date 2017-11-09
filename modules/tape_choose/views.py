@@ -41,7 +41,7 @@ def update_current_round():
         elif current_round is None:
             # handle the case: the first round is not still started
             first_round = Round.query.filter_by(grade=grade, previous_id=None).first()
-            if first_round is not None and (first_round.starts_at is None or \
+            if first_round is not None and (first_round.starts_at is None or
                     datetime.datetime.utcnow() >= first_round.starts_at):
                 current_round = CurrentRound(grade=grade, round=first_round)
                 db.session.add(current_round)
@@ -113,6 +113,12 @@ def results():
 def result_in_grade(grade):
     grades = app.config['GRADES']
     rounds = Round.query.filter_by(grade=grade).all()
+    ordered_rounds = [Round.query.filter_by(grade=grade, previous_id=None).first()]
+    if ordered_rounds[0] is None:
+        ordered_rounds = []
+    else:
+        while len(ordered_rounds[-1].next) == 1:
+            ordered_rounds.append(ordered_rounds[-1].next[0])
     marks = dict()
     voters = dict()
     for round in rounds:
@@ -127,6 +133,6 @@ def result_in_grade(grade):
                 else:
                     marks[round.id][colors.second_color_id] += 1
                 voters[round.id][choice.user.name] = voters[round.id].get(choice.user.name, 0) + 1
-    return render_template('result_in_grade.html', grades=grades, marks=marks, voters=voters, rounds=rounds,
+    return render_template('result_in_grade.html', grades=grades, marks=marks, voters=voters, rounds=ordered_rounds,
                            rounds_number=len(rounds), cur_grade=grade,
                            current_time=datetime.datetime.utcnow())

@@ -16,7 +16,9 @@
                     <tr>
                         {% for round in rounds %}
                             <th>
-                                Начало: {{config['DATE_TIME_OUTPUT'](round.starts_at)}}
+                                {% if round.starts_at %}
+                                    Начало: {{config['DATE_TIME_OUTPUT'](round.starts_at)}}
+                                {% endif %}
                             </th>
                         {% endfor %}
                     </tr>
