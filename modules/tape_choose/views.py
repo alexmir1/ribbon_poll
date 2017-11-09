@@ -19,8 +19,8 @@ def update_current_round():
         current_round = CurrentRound.query.filter_by(grade=grade).first()
         participants = []
         if current_round is not None and len(current_round.round.next) == 1 and \
-            current_round.round.next[0].starts_at is not None and \
-                datetime.datetime.utcnow() >= current_round.round.next[0].starts_at:
+                        current_round.round.next[0].starts_at is not None and \
+                        datetime.datetime.utcnow() >= current_round.round.next[0].starts_at:
             # handle the case: next round should be started already
             for colors in ComparingColors.query.filter_by(round=current_round.round).all():
                 if colors.second_color_id is not None:
@@ -41,7 +41,8 @@ def update_current_round():
         elif current_round is None:
             # handle the case: the first round is not still started
             first_round = Round.query.filter_by(grade=grade, previous_id=None).first()
-            if first_round is not None:
+            if first_round is not None and (first_round.starts_at is None or \
+                    datetime.datetime.utcnow() >= first_round.starts_at):
                 current_round = CurrentRound(grade=grade, round=first_round)
                 db.session.add(current_round)
                 participants += list(map(lambda x: x.id, Color.query.all()))
