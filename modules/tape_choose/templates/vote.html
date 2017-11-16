@@ -27,16 +27,20 @@
         {% for pair in pairs %}
             <section class="mdl-card mdl-card--border v_card mdl-shadow--2dp through mdl-shadow--16dp">
                 {% for i in range(2) %}
-                    <label class="mdl-card__supporting-text mdl-radio mdl-js-radio mdl-js-ripple-effect mdl-grid mdl-grid--no-spacing" for="{{pair.inputs[i].id}}" style="height: auto; margin: auto;">
+                    <label class="mdl-card__supporting-text mdl-radio mdl-js-radio mdl-js-ripple-effect mdl-grid mdl-grid--no-spacing" for="{{pair.inputs[i].id}}" style="height: auto; margin: 10px;">
                         {{pair.inputs[i](class="mdl-radio__button", onClick="check{}(this);".format(pair.id))}}
-                            <div class="mdl-cell mdl-cell--3-col">
-                                <img src="{{pair.colors[i].image_link}}" height="250px">
-                            </div>
-                            <div class="mdl-cell mdl-cell--9-col">
-                                <p class="tape" style="background-color: #{{pair.colors[i].hex}}">
-                                    ВЫПУСКНИК 2К!8
-                                </p>
-                            </div>
+                        <div class="mdl-cell mdl-cell--3-col mdl-cell--hide-phone">
+                            <img src="{{pair.colors[i].image_link}}" height="250px">
+                        </div>
+                        <div class="mdl-cell mdl-cell--9-col mdl-cell--hide-phone mdl-cell--hide-tablet">
+                            <p class="tape" style="background-color: #{{pair.colors[i].hex}}">ВЫПУСКНИК 2К!8</p>
+                        </div>
+                        <div class="mdl-cell mdl-cell--5-col mdl-cell--hide-desktop mdl-cell--hide-phone" style="margin-left: auto; padding-left: 16px;">
+                            <p class="tape" style="background-color: #{{pair.colors[i].hex}}">2К!8</p>
+                        </div>
+                        <div class="mdl-cell mdl-cell--4-col mdl-cell--hide-desktop mdl-cell--hide-tablet mdl-cell--stretch" style="background-color: #{{pair.colors[i].hex}}">
+                            <img src="{{pair.colors[i].image_link}}" height="250px">
+                        </div>
                     </label>
                 {% endfor %}
             </section>

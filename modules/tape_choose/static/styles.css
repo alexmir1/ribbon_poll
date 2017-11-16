@@ -5,6 +5,7 @@
     padding: 20px;
     line-height: 50px;
     word-break: keep-all;
+    white-space: pre;
     overflow: auto;
 }
 
