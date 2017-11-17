@@ -1,0 +1,95 @@
+{% extends "results_base.html" %}
+{% block result %}
+<main class="mdl-base mdl-layout__content">
+    <section class= "mdl-grid">
+        <div class="mdl-cell mdl-cell--12-col mdl-card mdl-card--border mdl-shadow--2dp through mdl-shadow--16dp">
+            <div class="table-responsive" style="max-width: 100%; overflow: auto">
+                <table class="mdl-data-table mdl-js-data-table mdl-cell--12-col" style="width: auto" id="results">
+                    <thead>
+                    <tr>
+                        {% for i in range(rounds_number) %}
+                            <th>
+                                Раунд {{i + 1}}
+                            </th>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for round in rounds %}
+                            <th>
+                                {% if round.starts_at %}
+                                    Начало: {{config['DATE_TIME_OUTPUT'](round.starts_at)}}
+                                {% endif %}
+                            </th>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        {% for round in rounds %}
+                            <td>
+                                {% for colors in round.colors %}
+                                    <div class="table-responsive" style="max-width: 100%; overflow: auto; padding: 10px">
+                                        <table class="mdl-card--border mdl-shadow--2dp through mdl-shadow--16dp mdl-data-table mdl-js-data-table">
+                                        <tbody>
+                                        <tr>
+                                            <td style="background-color: #{{colors.first_color.hex}}">
+                                                <a href="{{colors.first_color.image_link}}" target="_blank">
+                                                    {{ colors.first_color.hex }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                {{ marks[round.id][colors.first_color_id] }}
+                                            </td>
+                                        </tr>
+                                        {% if colors.second_color_id is not none %}
+                                            <tr>
+                                                <td style="background-color: #{{colors.second_color.hex}}">
+                                                    <a href="{{colors.second_color.image_link}}" target="_blank">
+                                                        {{ colors.second_color.hex }}
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    {{ marks[round.id][colors.second_color_id] }}
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                        </table>
+                                    </div>
+                                {% endfor %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for round in rounds %}
+                            <td>
+                                <div class="table-responsive" style="max-width: 100%; overflow: auto">
+                                    <table class="mdl-shadow--2dp through mdl-shadow--16dp mdl-data-table mdl-js-data-table">
+                                    <tbody>
+                                    {% for voter in voters[round.id].items() %}
+                                        <tr>
+                                            <td>
+                                                {{ voter[0] }}
+                                            </td>
+                                            <td>
+                                                {{ voter[1] }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>
+                Текущее время: {{config['DATE_TIME_OUTPUT'](current_time)}}
+            </p>
+        </div>
+    </section>
+</main>
+
+{% endblock %}

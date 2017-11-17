@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<link rel="stylesheet" href="static/styles.css">
+<link rel="stylesheet" href="{{url_for('tape_choose.static', filename='styles.css')}}">
 
 <script>
     var button_first_ids = [{% for pair in pairs %} {{pair.first.id}}, {% endfor %}];
@@ -27,30 +27,54 @@
 <main class="mdl-layout mdl-base mdl-js-layout mdl-layout__content">
     <form action="" method="post">
         {{ form.hidden_tag() }}
-        <h1 align="center">Голосование</h1>
-        <info>
-            Голосование проходит по олимпийской системе. Для каждой пары цветов выберите тот, что вам нравится больше.
-            Победивший в каждой паре цвет пройдет в следующий этап.
-        </info>
+        <section class="v_card mdl-grid mdl-shadow--2dp mdl-card--border">
+            <div class="mdl-card mdl-cell mdl-cell--12-col mdl-card--border">
+                <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text">
+                        Информация
+                    </h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                    <p>
+                        Для каждой пары цветов Вы можете выбрать тот, который нравиться Вам больше. Выбирать можно нажатием на ленту/кружок. Вы можете отменить выбор повторным нажатием на элемент.
+                        <b>В форме нет ни одного обязательного поля.</b>
+                    </p>
+                    <p>
+                        При прохождении на телефоне рекомендуется повернуть его горизонтально.
+                    </p>
+                </div>
+            </div>
+        </section>
 
         {% for pair in pairs %}
-            <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-card--border v_card mdl-shadow--2dp through mdl-shadow--16dp">
-                <header class="mdl-cell mdl-cell--3-col">
-                    <image src="{{pair.first.image}}" height="250px"></image>
-                </header>
-                <div class="mdl-card__supporting-text mdl-card--border tape" style="background-color: #{{pair.first.hex}}">
-                    <p class="tape">ВЫПУСКНИК 2К!8</p>
-                </div>
-                <button id="{{pair.first.id}}">Click 1</button>
-                    
-                <header class="mdl-cell mdl-cell--3-col">
-                    <image src="{{pair.second.image}}" height="250px"></image>
-                </header>
-                <div class="mdl-card__supporting-text mdl-card--border tape" style="background-color: #{{pair.second.hex}}">
-                    <p class="tape">ВЫПУСКНИК 2К!8</p>
-                </div>
-                <button id="{{pair.second.id}}">Click 2</button>
+            <section class="mdl-card mdl-card--border v_card mdl-shadow--2dp through mdl-shadow--16dp">
+                {% for i in range(2) %}
+                    <label class="mdl-card__supporting-text mdl-radio mdl-js-radio mdl-js-ripple-effect mdl-grid mdl-grid--no-spacing" for="{{pair.inputs[i].id}}" style="height: auto; margin: auto;">
+                        {{pair.inputs[i](class="mdl-radio__button", onClick="check{}(this);".format(pair.id))}}
+                            <div class="mdl-cell mdl-cell--3-col">
+                                <img src="{{pair.colors[i].image_link}}" height="250px">
+                            </div>
+                            <div class="mdl-cell mdl-cell--9-col">
+                                <p class="tape" style="background-color: #{{pair.colors[i].hex}}">
+                                    ВЫПУСКНИК 2К!8
+                                </p>
+                            </div>
+                    </label>
+                {% endfor %}
             </section>
+            <script>
+                var a{{ pair.id }}, b{{ pair.id }} = 1;
+                {% for i in range(2) %}
+                    {% if pair.inputs[i].checked %}
+                        a{{ pair.id }} = document.getElementById("{{pair.inputs[i].id}}");
+                    {% endif %}
+                {% endfor %}
+                function check{{ pair.id }}(c) {
+                    if (a{{ pair.id }} != c) {b{{ pair.id }} = 0;a{{ pair.id }} = c};
+                    b{{ pair.id }} ^= 1;
+                    if (b{{ pair.id }} == 0) c.parentElement.MaterialRadio.uncheck();
+                };
+            </script>
         {% endfor %}
 
         <section class="mdl-grid mdl-grid--no-spacing mdl-shadow--2dp mdl-card--border v_card mdl-shadow--2dp through mdl-shadow--16dp">

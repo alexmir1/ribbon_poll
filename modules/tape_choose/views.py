@@ -18,9 +18,9 @@ def update_current_round():
     for grade in grades:
         current_round = CurrentRound.query.filter_by(grade=grade).first()
         participants = []
-        if current_round is not None and current_round.round.next is not None and \
-                current_round.round.next[0].starts_at is not None and\
-                datetime.datetime.now() >= current_round.round.next[0].starts_at:
+        if current_round is not None and len(current_round.round.next) == 1 and \
+                        current_round.round.next[0].starts_at is not None and \
+                        datetime.datetime.utcnow() >= current_round.round.next[0].starts_at:
             # handle the case: next round should be started already
             for colors in ComparingColors.query.filter_by(round=current_round.round).all():
                 if colors.second_color_id is not None:
@@ -40,11 +40,11 @@ def update_current_round():
             current_round.round = current_round.round.next[0]
         elif current_round is None:
             # handle the case: the first round is not still started
-            first_round = Round.query.filter_by(grade=grade).first()
-            if first_round is not None:
+            first_round = Round.query.filter_by(grade=grade, previous_id=None).first()
+            if first_round is not None and (first_round.starts_at is None or
+                    datetime.datetime.utcnow() >= first_round.starts_at):
                 current_round = CurrentRound(grade=grade, round=first_round)
                 db.session.add(current_round)
-                #db.session.commit()
                 participants += list(map(lambda x: x.id, Color.query.all()))
         # now, using collected list of participants, update CompairingColors pairs and Choices
         for i in range(1, len(participants), 2):
@@ -64,49 +64,75 @@ def update_current_round():
 @tape_choose.route('/vote', methods=['GET', 'POST'])
 @login_required
 def vote():
-    colors = []
-    for color in Color.query.all():
-        colors.append(ColorInput(hex=color.hex, image=color.image_link, id=color.id))
+    current_round = CurrentRound.query.filter_by(grade=g.user.grade).first()
+    if current_round is not None:
+        return redirect(url_for('tape_choose.vote_in_round', round_id=current_round.round_id))
+    else:
+        return "Нет доступных раундов"
 
+
+@tape_choose.route('/vote/<int:round_id>', methods=['GET', 'POST'])
+@login_required
+def vote_in_round(round_id):
+    if CurrentRound.query.filter_by(grade=g.user.grade).first() is None or \
+                    CurrentRound.query.filter_by(grade=g.user.grade).first().round_id != round_id:
+        return "Раунд недоступен"
+    colors = []
+    for comparing in ComparingColors.query.filter_by(round_id=round_id).all():
+        if comparing.second_color_id is not None:
+            colors.append(ColorInput(comparing))
     form = forms.gen_vote_form(colors)
     rf = Feedback()
     if form.validate_on_submit():
         send_feedback(rf, request.headers)
-        for mark in Mark.query.filter_by(user=g.user).all():
-            db.session.delete(mark)
+        for comparing in ComparingColors.query.filter_by(round_id=round_id).all():
+            for choice in Choices.query.filter_by(user=g.user, comparing_colors=comparing).all():
+                db.session.delete(choice)
         for color in colors:
-            if color.input.data is not None:
-                db.session.add(Mark(user_id=g.user.id, color_id=color.id, mark=color.input.data))
+            if color.input.data != 'None':
+                db.session.add(Choices(user=g.user, comparing_colors_id=int(color.id), selected=int(color.input.data)))
         db.session.commit()
         return redirect(url_for('index'))
     else:
         if request.method == 'GET':
             for color in colors:
-                mark = Mark.query.filter_by(user_id=g.user.id, color_id=color.id).first()
-                if mark is not None:
-                    color.input.data = mark.mark
-        return render_template('vote.html', form=form, tapes=colors, rf=rf, feedback_available=feedback_available())
+                choice = Choices.query.filter_by(user=g.user, comparing_colors_id=int(color.id)).first()
+                if choice is not None:
+                    color.input.data = str(choice.selected)
+                    color.inputs[choice.selected].checked = True
+        return render_template('vote.html', form=form, pairs=colors, rf=rf, feedback_available=feedback_available())
 
 
 @tape_choose.route('/results')
 def results():
-    colors = Color.query.all()
     grades = app.config['GRADES']
-    marks = dict([(color.id, dict([(grade, [0, 0]) for grade in grades])) for color in colors])
-    db_marks = Mark.query.all()
-    voters = dict([(grade, dict()) for grade in grades])
-    for mark in db_marks:
-        try:
-            marks[mark.color_id][mark.user.grade][0] += mark.mark
-            marks[mark.color_id][mark.user.grade][1] += 1
-            voters[mark.user.grade][mark.user.name] = voters[mark.user.grade].get(mark.user.name, 0) + 1
-        except KeyError as error:
-            print(error)
-    for x in marks.values():
-        for y in x.values():
-            if y[1] > 0:
-                y[0] /= y[1]
-                y[0] = '{:.2f}'.format(y[0])
-            else:
-                y[0] = None
-    return render_template('results.html', colors=colors, grades=grades, marks=marks, voters=voters)
+    return render_template('results.html', grades=grades)
+
+
+@tape_choose.route('/results/<grade>')
+def result_in_grade(grade):
+    grades = app.config['GRADES']
+    rounds = Round.query.filter_by(grade=grade).all()
+    ordered_rounds = [Round.query.filter_by(grade=grade, previous_id=None).first()]
+    if ordered_rounds[0] is None:
+        ordered_rounds = []
+    else:
+        while len(ordered_rounds[-1].next) == 1:
+            ordered_rounds.append(ordered_rounds[-1].next[0])
+    marks = dict()
+    voters = dict()
+    for round in rounds:
+        marks[round.id] = dict()
+        voters[round.id] = dict()
+        for colors in round.colors:
+            marks[round.id][colors.first_color_id] = 0
+            marks[round.id][colors.second_color_id] = 0
+            for choice in colors.choices:
+                if choice.selected == 0:
+                    marks[round.id][colors.first_color_id] += 1
+                else:
+                    marks[round.id][colors.second_color_id] += 1
+                voters[round.id][choice.user.name] = voters[round.id].get(choice.user.name, 0) + 1
+    return render_template('result_in_grade.html', grades=grades, marks=marks, voters=voters, rounds=ordered_rounds,
+                           rounds_number=len(rounds), cur_grade=grade,
+                           current_time=datetime.datetime.utcnow())
