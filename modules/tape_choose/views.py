@@ -100,7 +100,8 @@ def vote_in_round(round_id):
                 if choice is not None:
                     color.input.data = str(choice.selected)
                     color.inputs[choice.selected].checked = True
-        return render_template('vote.html', form=form, pairs=colors, rf=rf, feedback_available=feedback_available())
+        return render_template('vote.html', form=form, pairs=colors, rf=rf, feedback_available=feedback_available(),
+                               Stepan=True if request.args.get('Stepan') == 'True' or None else None, round_id=round_id)
 
 
 @tape_choose.route('/results')

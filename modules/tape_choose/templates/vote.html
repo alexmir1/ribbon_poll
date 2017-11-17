@@ -2,11 +2,25 @@
 {% block content %}
 <link rel="stylesheet" href="{{url_for('tape_choose.static', filename='styles.css')}}">
 
+{% if Stepan %}
+    <style>
+        main {
+            background-image: url('http://333v.ru/uploads/8d/8dd724408586c45054ba199fb3ebcb40.jpg');
+        }
+    </style>
+{% endif %}
+<script>
+    function Stepan_version()
+    {
+        window.location.replace("{{url_for('tape_choose.vote_in_round', round_id=round_id, Stepan=Stepan is none)}}")
+    }
+</script>
+
 <main class="mdl-layout mdl-base mdl-js-layout mdl-layout__content">
     <form action="" method="post">
         {{ form.hidden_tag() }}
-        <section class="v_card mdl-grid mdl-shadow--2dp mdl-card--border">
-            <div class="mdl-card mdl-cell mdl-cell--12-col mdl-card--border">
+        <section class="v_card mdl-grid mdl-shadow--2dp">
+            <div class="mdl-card mdl-cell mdl-cell--12-col">
                 <div class="mdl-card__title">
                     <h2 class="mdl-card__title-text">
                         Информация
@@ -16,6 +30,15 @@
                     <p>
                         Для каждой пары цветов Вы можете выбрать тот, который нравиться Вам больше. Выбирать можно нажатием на ленту/кружок. Вы можете отменить выбор повторным нажатием на элемент.
                         <b>В форме нет ни одного обязательного поля.</b>
+                    </p>
+                    <p>
+                        <label id="Stepan_label" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="Stepan" style="width: auto;">
+                            <input type="checkbox" id="Stepan" class="mdl-switch__input" onClick="Stepan_version()" {% if Stepan %} checked {% endif %}>
+                            <span class="mdl-switch__label">Версия для Степана</span>
+                        </label>
+                        <span class="mdl-tooltip mdl-tooltip--large" for="Stepan_label">
+                            Несохранённые изменения будут потеряны
+                        </span>
                     </p>
                 </div>
             </div>
@@ -30,10 +53,10 @@
                             <img src="{{pair.colors[i].image_link}}" height="250px">
                         </div>
                         <div class="mdl-cell mdl-cell--9-col mdl-cell--hide-phone mdl-cell--hide-tablet">
-                            <p class="tape" style="background-color: #{{pair.colors[i].hex}}">ВЫПУСКНИК 2К!8</p>
+                            <p class="tape" style="background-color: #{{pair.colors[i].hex}}">ВЫПУСКНИК{% if not Stepan %} 2К!8{% endif %}</p>
                         </div>
                         <div class="mdl-cell mdl-cell--5-col mdl-cell--hide-desktop mdl-cell--hide-phone" style="margin-left: auto; padding-left: 16px;">
-                            <p class="tape" style="background-color: #{{pair.colors[i].hex}}">2К!8</p>
+                            <p class="tape" style="background-color: #{{pair.colors[i].hex}}">{% if not Stepan %}2К!8{% else %}2018{% endif %}</p>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col mdl-cell--hide-desktop mdl-cell--hide-tablet mdl-cell--stretch" style="background-color: #{{pair.colors[i].hex}}">
                             <img src="{{pair.colors[i].image_link}}" height="250px">
@@ -73,7 +96,7 @@
                                 </div>
                                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-cell mdl-cell--4-col">
                                     {{rf.designing(class="mdl-textfield__input")}}
-                                    <label class="mdl-textfield__label" for="{{rf.designing.id}}">Дизайн</label>
+                                    <label class="mdl-textfield__label" for="{{rf.designing.id}}">{% if Stepan %}Патриотичность{% else %}Дизайн{% endif %}</label>
                                 </div>
                             </div>
                             <div class="mdl-grid">
@@ -92,7 +115,11 @@
             </section>
         <div class="v_card mdl-grid">
             <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect v_card" type="submit">
-                Сохранить
+                {% if Stepan %}
+                    Слава России
+                {% else %}
+                    Сохранить
+                {% endif %}
             </button>
         </div>
     </form>
