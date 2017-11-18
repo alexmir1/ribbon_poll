@@ -7,6 +7,23 @@ from . import tape_choose, forms
 from .ColorInput import ColorInput
 from modules.feedback.form import Feedback
 from modules.feedback.send_feedback import send_feedback, feedback_available
+from flask_mail import Message
+import mail_config
+from app import mail
+
+def form_message(grade):
+    """
+    Forms the message about new round
+    """
+    grade_round = CurrentRound.query.filter_by(grade=grade).first()
+    if grade_round is None:
+        return None
+
+    cur_round = grade_round.round
+    if cur_round is None:
+        return None
+
+    return render_template('message.html', round=cur_round)
 
 
 @tape_choose.before_request
@@ -38,6 +55,11 @@ def update_current_round():
                 else:
                     participants.append(colors.first_color_id)
             current_round.round = current_round.round.next[0]
+
+            text = form_message(grade)
+            msg = Message(text, sender=mail_config.MAIL_USERNAME, recipients=[user.email for user in User.query.filter_by(grade=grade).all()])
+            mail.send(msg)
+
         elif current_round is None:
             # handle the case: the first round is not still started
             first_round = Round.query.filter_by(grade=grade, previous_id=None).first()
@@ -46,6 +68,12 @@ def update_current_round():
                 current_round = CurrentRound(grade=grade, round=first_round)
                 db.session.add(current_round)
                 participants += list(map(lambda x: x.id, Color.query.all()))
+
+            text = form_message(grade)
+            msg = Message(text, sender=mail_config.MAIL_USERNAME,
+                          recipients=[user.email for user in User.query.filter_by(grade=grade).all()])
+            mail.send(msg)
+
         # now, using collected list of participants, update CompairingColors pairs and Choices
         for i in range(1, len(participants), 2):
             colors = ComparingColors(first_color_id=participants[i - 1], second_color_id=participants[i],
