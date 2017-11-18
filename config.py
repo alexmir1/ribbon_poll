@@ -29,6 +29,7 @@ PREFERRED_URL_SCHEME = 'http' if os.environ.get('HEROKU') is None else 'https'
 
 FEEDBACK_LIMIT = 10
 
+REMIND_HOURS = [24, 2]
 
 def DATE_TIME_OUTPUT(date):
     DATE_TIME_FORMAT = '%d.%m.%y %H:%M'

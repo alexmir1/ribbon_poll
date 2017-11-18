@@ -3,73 +3,46 @@
     If executed with test parameter ('>> python reminder.py test'), reminder sends a message to developers only
 """
 
-from app import app
-from flask import render_template_string
-from app.models import User, CurrentRound, Round
-from app import mail
+from datetime import timedelta, datetime
+from flask import render_template
+from app.models import User, CurrentRound, Choices, ComparingColors
+from app import mail, app
 from flask_mail import Message
 from modules.tape_choose.views import update_current_round
 import mail_config
 import config
 
-import sys
-import argparse
 
-
-def form_message(grade):
+def remind(grade):
     """
     Forms the message about new round
     """
     grade_round = CurrentRound.query.filter_by(grade=grade).first()
     if grade_round is None:
-        return None
+        return
+    round = grade_round.round
 
-    cur_round = grade_round.round
-    if cur_round is None:
-        return None
+    for user in User.query.filter_by(grade=grade):
+        has_participated = False
+        for colors in ComparingColors.query.filter_by(round=round):
+            has_participated = has_participated or \
+                               Choices.query.filter_by(comparing_colors=colors, user=user).first() is not None
+        if not has_participated:
+            msg = Message(subject='Конец раунда близко', recipients=[user.email], sender=mail_config.MAIL_USERNAME,
+                          html=render_template('end_round_notification.html', username=user.name,
+                                               ends_at=round.next[0].starts_at))
+            mail.send(msg)
 
+
+if __name__ == '__main__':
     with app.app_context():
-        with open('message.html') as f:
-            return render_template_string(f.read(), round=cur_round)
-
-
-def remind(grade):
-    """
-    Sends message about new round to every person
-    """
-
-    text = form_message(grade)
-    if text is None:
-        return
-    msg = Message(text, sender=mail_config.MAIL_USERNAME, recipients=[user.email for user in User.query.filter_by(grade=grade).all()])
-    mail.send(msg)
-
-
-def test_remind():
-    """
-    Test version of 'remind()': sends the message to leha-kartoha and maksim-apelsin
-    """
-    text = form_message('b3')
-    if text is None:
-        return
-    msg = Message(text, sender=mail_config.MAIL_USERNAME, recipients=[mail_config.MAIL_USERNAME, 's18b3_lavrik@179.ru'])
-    mail.send(msg)
-
-
-def main():
-    for grade in config.GRADES:
-        cur_round = CurrentRound.query.filter_by(grade=grade).first()
         update_current_round()
-        new_round = CurrentRound.query.filter_by(grade=grade).first()
-
-        if cur_round != new_round:
-            parser = argparse.ArgumentParser()
-            parser.add_argument('name', nargs='?')
-            namespace = parser.parse_args(sys.argv[1:])
-
-            if namespace.name == 'test':
-                test_remind()
-            else:
-                remind(grade)
-
-main()
+        for grade in config.GRADES:
+            grade_round = CurrentRound.query.filter_by(grade=grade).first()
+            if grade_round is not None:
+                round = grade_round.round
+                if len(round.next) == 1 and round.next[0].starts_at is not None:
+                    for delta in config.REMIND_HOURS:
+                        if abs(datetime.utcnow() + timedelta(hours=delta) - round.next[0].starts_at) <\
+                                timedelta(minutes=30):
+                            remind(grade)

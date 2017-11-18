@@ -11,19 +11,19 @@ from flask_mail import Message
 import mail_config
 from app import mail
 
-def form_message(grade):
+
+def new_round_notification(grade):
     """
     Forms the message about new round
     """
-    grade_round = CurrentRound.query.filter_by(grade=grade).first()
-    if grade_round is None:
-        return None
 
-    cur_round = grade_round.round
-    if cur_round is None:
-        return None
+    round = CurrentRound.query.filter_by(grade=grade).first().round
 
-    return render_template('message.html', round=cur_round)
+    for user in User.query.filter_by(grade=grade):
+        msg = Message(subject='Начался новый раунд', recipients=[user.email], sender=mail_config.MAIL_USERNAME,
+                      html=render_template('new_round_notification.html', username=user.name,
+                                           ends_at=round.next[0].starts_at if len(round.next) == 1 else None))
+        mail.send(msg)
 
 
 @tape_choose.before_request
@@ -56,23 +56,18 @@ def update_current_round():
                     participants.append(colors.first_color_id)
             current_round.round = current_round.round.next[0]
 
-            text = form_message(grade)
-            msg = Message(text, sender=mail_config.MAIL_USERNAME, recipients=[user.email for user in User.query.filter_by(grade=grade).all()])
-            mail.send(msg)
+            new_round_notification(grade)
 
         elif current_round is None:
             # handle the case: the first round is not still started
             first_round = Round.query.filter_by(grade=grade, previous_id=None).first()
             if first_round is not None and (first_round.starts_at is None or
-                    datetime.datetime.utcnow() >= first_round.starts_at):
+                                                    datetime.datetime.utcnow() >= first_round.starts_at):
                 current_round = CurrentRound(grade=grade, round=first_round)
                 db.session.add(current_round)
                 participants += list(map(lambda x: x.id, Color.query.all()))
 
-            text = form_message(grade)
-            msg = Message(text, sender=mail_config.MAIL_USERNAME,
-                          recipients=[user.email for user in User.query.filter_by(grade=grade).all()])
-            mail.send(msg)
+                new_round_notification(grade)
 
         # now, using collected list of participants, update CompairingColors pairs and Choices
         for i in range(1, len(participants), 2):
