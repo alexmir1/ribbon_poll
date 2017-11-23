@@ -1,8 +1,7 @@
 """
     A script that reminds all users about the start of new round using email
-    If executed with test parameter ('>> python reminder.py test'), reminder sends a message to developers only
 """
-
+import smtplib
 from datetime import timedelta, datetime
 from flask import render_template
 from app.models import User, CurrentRound, Choices, ComparingColors
@@ -28,10 +27,16 @@ def remind(grade):
             has_participated = has_participated or \
                                Choices.query.filter_by(comparing_colors=colors, user=user).first() is not None
         if not has_participated:
-            msg = Message(subject='Конец раунда близко', recipients=[user.email], sender=mail_config.MAIL_USERNAME,
-                          html=render_template('end_round_notification.html', username=user.name,
-                                               ends_at=round.next[0].starts_at))
-            mail.send(msg)
+            while True:
+                try:
+                    msg = Message(subject='Конец раунда близко', recipients=[user.email], sender=mail_config.MAIL_USERNAME,
+                                  html=render_template('end_round_notification.html', username=user.name,
+                                                       ends_at=round.next[0].starts_at))
+                    mail.send(msg)
+                except smtplib.SMTPServerDisconnected:
+                    pass
+                else:
+                    break
 
 
 if __name__ == '__main__':

@@ -1,4 +1,6 @@
 import datetime
+import smtplib
+
 from flask import render_template, g, redirect, url_for, request
 from flask_login import login_required
 from app import db, app
@@ -20,10 +22,16 @@ def new_round_notification(grade):
     round = CurrentRound.query.filter_by(grade=grade).first().round
 
     for user in User.query.filter_by(grade=grade):
-        msg = Message(subject='Начался новый раунд', recipients=[user.email], sender=mail_config.MAIL_USERNAME,
-                      html=render_template('new_round_notification.html', username=user.name,
-                                           ends_at=round.next[0].starts_at if len(round.next) == 1 else None))
-        mail.send(msg)
+        while True:
+            try:
+                msg = Message(subject='Начался новый раунд', recipients=[user.email], sender=mail_config.MAIL_USERNAME,
+                              html=render_template('new_round_notification.html', username=user.name,
+                                                   ends_at=round.next[0].starts_at if len(round.next) == 1 else None))
+                mail.send(msg)
+            except smtplib.SMTPServerDisconnected:
+                pass
+            else:
+                break
 
 
 @tape_choose.before_request
@@ -32,6 +40,7 @@ def update_current_round():
     Updating (or creating) current round if needed; updating users' votes on this round.
     """
     grades = app.config['GRADES']
+    notify_grades = []
     for grade in grades:
         current_round = CurrentRound.query.filter_by(grade=grade).first()
         participants = []
@@ -56,7 +65,7 @@ def update_current_round():
                     participants.append(colors.first_color_id)
             current_round.round = current_round.round.next[0]
 
-            new_round_notification(grade)
+            notify_grades.append(grade)
 
         elif current_round is None:
             # handle the case: the first round is not still started
@@ -67,7 +76,7 @@ def update_current_round():
                 db.session.add(current_round)
                 participants += list(map(lambda x: x.id, Color.query.all()))
 
-                new_round_notification(grade)
+                notify_grades.append(grade)
 
         # now, using collected list of participants, update CompairingColors pairs and Choices
         for i in range(1, len(participants), 2):
@@ -82,6 +91,9 @@ def update_current_round():
         if len(participants) % 2 == 1:
             db.session.add(ComparingColors(first_color_id=participants[-1], round=current_round.round))
         db.session.commit()
+
+    for grade in notify_grades:
+        new_round_notification(grade)
 
 
 @tape_choose.route('/vote', methods=['GET', 'POST'])
