@@ -11,7 +11,7 @@ from modules.feedback.form import Feedback
 from modules.feedback.send_feedback import send_feedback, feedback_available
 from flask_mail import Message
 import mail_config
-from app import mail
+from app.send_email import send_email
 
 
 def new_round_notification(grade):
@@ -22,16 +22,10 @@ def new_round_notification(grade):
     round = CurrentRound.query.filter_by(grade=grade).first().round
 
     for user in User.query.filter_by(grade=grade):
-        while True:
-            try:
-                msg = Message(subject='Начался новый раунд', recipients=[user.email], sender=mail_config.MAIL_USERNAME,
-                              html=render_template('new_round_notification.html', username=user.name,
-                                                   ends_at=round.next[0].starts_at if len(round.next) == 1 else None))
-                mail.send(msg)
-            except smtplib.SMTPServerDisconnected:
-                pass
-            else:
-                break
+        msg = Message(subject='Начался новый раунд', recipients=[user.email], sender=mail_config.MAIL_USERNAME,
+                      html=render_template('new_round_notification.html', username=user.name,
+                                           ends_at=round.next[0].starts_at if len(round.next) == 1 else None))
+        send_email(msg)
 
 
 @tape_choose.before_request
