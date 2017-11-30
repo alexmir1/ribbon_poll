@@ -2,19 +2,39 @@
 {% block content %}
 <link rel="stylesheet" href="{{url_for('tape_choose.static', filename='styles.css')}}">
 
-{% if Stepan %}
-    <style>
-        main {
-            background-image: url('http://333v.ru/uploads/8d/8dd724408586c45054ba199fb3ebcb40.jpg');
-            background-size: cover;
-            background-repeat: no-repeat;
-        }
-    </style>
-{% endif %}
 <script>
-    function Stepan_version()
+    function change_version(v)
     {
-        window.location.replace("{{url_for('tape_choose.vote_in_round', round_id=round_id, Stepan=Stepan is none)}}")
+        if (v == 0) {
+            document.getElementsByTagName('main')[0].style.backgroundImage = "url('http://www.printableflags.net/wp-content/uploads/2017/04/ukraine-flag-c2b2757203f9b9e1b86986aad502d2d5-eCsFlX.jpg')";
+            $('.big-tape').each(function(i, elem) {
+                elem.innerHTML = 'Выпускник 2K18';
+            });
+            $('.small-tape').each(function(i, elem) {
+                elem.innerHTML = '2K18';
+            });
+            $('#submit-text')[0].innerHTML = 'Слава Украине';
+        }
+        if (v == 1) {
+            document.getElementsByTagName('main')[0].style.backgroundImage = 'None';
+            $('.big-tape').each(function(i, elem) {
+                elem.innerHTML = 'Выпускник 2K!8';
+            });
+            $('.small-tape').each(function(i, elem) {
+                elem.innerHTML = '2K!8';
+            });
+            $('#submit-text')[0].innerHTML = 'Сохранить';
+        }
+        if (v == 2) {
+            document.getElementsByTagName('main')[0].style.backgroundImage = "url('http://333v.ru/uploads/8d/8dd724408586c45054ba199fb3ebcb40.jpg')";
+            $('.big-tape').each(function(i, elem) {
+                elem.innerHTML = 'Выпускник 2018';
+            });
+            $('.small-tape').each(function(i, elem) {
+                elem.innerHTML = '2018';
+            });
+            $('#submit-text')[0].innerHTML = 'Слава России';
+        }
     }
 </script>
 
@@ -34,13 +54,11 @@
                         <b>В форме нет ни одного обязательного поля.</b>
                     </p>
                     <p>
-                        <label id="Stepan_label" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="Stepan" style="width: auto;">
-                            <input type="checkbox" id="Stepan" class="mdl-switch__input" onClick="Stepan_version()" {% if Stepan %} checked {% endif %}>
-                            <span class="mdl-switch__label">Версия для Степана</span>
-                        </label>
-                        <span class="mdl-tooltip mdl-tooltip--large" for="Stepan_label">
-                            Несохранённые изменения будут потеряны
-                        </span>
+                        Перетяните влево, чтобы открыть версию для Артура.
+                        Перетяните вправо, чтобы открыть версию для Степана.
+                    </p>
+                    <p>
+                        <input class="mdl-slider mdl-js-slider" type="range" name="version" min="0" max="2" value="1" oninput="change_version(this.value)" onchange="change_version(this.value)">
                     </p>
                 </div>
             </div>
@@ -55,10 +73,10 @@
                             <img src="{{pair.colors[i].image_link}}" height="250px">
                         </div>
                         <div class="mdl-cell mdl-cell--9-col mdl-cell--hide-phone mdl-cell--hide-tablet">
-                            <p class="tape" style="background-color: #{{pair.colors[i].hex}}">ВЫПУСКНИК{% if not Stepan %} 2К!8{% endif %}</p>
+                            <p class="tape big-tape" style="background-color: #{{pair.colors[i].hex}}">ВЫПУСКНИК 2К!8</p>
                         </div>
                         <div class="mdl-cell mdl-cell--5-col mdl-cell--hide-desktop mdl-cell--hide-phone" style="margin-left: auto; padding-left: 16px;">
-                            <p class="tape" style="background-color: #{{pair.colors[i].hex}}">{% if not Stepan %}2К!8{% else %}2018{% endif %}</p>
+                            <p class="tape small-tape" style="background-color: #{{pair.colors[i].hex}}">2К!8</p>
                         </div>
                         <div class="mdl-cell mdl-cell--4-col mdl-cell--hide-desktop mdl-cell--hide-tablet mdl-cell--stretch" style="background-color: #{{pair.colors[i].hex}}">
                             <img src="{{pair.colors[i].image_link}}" height="250px">
@@ -99,7 +117,7 @@
                                 </div>
                                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-cell mdl-cell--4-col">
                                     {{rf.designing(class="mdl-textfield__input")}}
-                                    <label class="mdl-textfield__label" for="{{rf.designing.id}}">{% if Stepan %}Патриотичность{% else %}Дизайн{% endif %}</label>
+                                    <label class="mdl-textfield__label" for="{{rf.designing.id}}">Дизайн</label>
                                 </div>
                             </div>
                             <div class="mdl-grid">
@@ -118,14 +136,10 @@
             </section>
         <div class="v_card mdl-grid">
             <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect v_card" type="submit">
-                {% if Stepan %}
-                    Слава России
-                {% else %}
-                    Сохранить
-                {% endif %}
+                <span id="submit-text">Сохранить</span>
             </button>
         </div>
     </form>
 </main>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 {% endblock %}
