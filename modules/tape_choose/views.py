@@ -15,14 +15,10 @@ from app.send_email import send_email
 
 
 def new_round_notification(grade):
-    """
-    Forms the message about new round
-    """
-
     round = CurrentRound.query.filter_by(grade=grade).first().round
 
     for user in User.query.filter_by(grade=grade):
-        msg = Message(subject='Начался новый раунд', recipients=[user.email], sender=mail_config.MAIL_USERNAME,
+        msg = Message(subject='Начался новый раунд', recipients=[user.email], reply_to=mail_config.ADMINS[0],
                       html=render_template('new_round_notification.html', username=user.name,
                                            ends_at=round.next[0].starts_at if len(round.next) == 1 else None))
         send_email(msg)
@@ -129,8 +125,7 @@ def vote_in_round(round_id):
                 if choice is not None:
                     color.input.data = str(choice.selected)
                     color.inputs[choice.selected].checked = True
-        return render_template('vote.html', form=form, pairs=colors, rf=rf, feedback_available=feedback_available(),
-                               Stepan=True if request.args.get('Stepan') == 'True' or None else None, round_id=round_id)
+        return render_template('vote.html', form=form, pairs=colors, rf=rf, feedback_available=feedback_available())
 
 
 @tape_choose.route('/results')

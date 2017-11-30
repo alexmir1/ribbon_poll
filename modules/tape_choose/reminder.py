@@ -13,9 +13,6 @@ import config
 
 
 def remind(grade):
-    """
-    Forms the message about new round
-    """
     grade_round = CurrentRound.query.filter_by(grade=grade).first()
     if grade_round is None:
         return
@@ -27,7 +24,7 @@ def remind(grade):
             has_participated = has_participated or \
                                Choices.query.filter_by(comparing_colors=colors, user=user).first() is not None
         if not has_participated:
-            msg = Message(subject='Конец раунда близко', recipients=[user.email], sender=mail_config.MAIL_USERNAME,
+            msg = Message(subject='Конец раунда близко', recipients=[user.email], reply_to=mail_config.ADMINS[0],
                           html=render_template('end_round_notification.html', username=user.name,
                                                ends_at=round.next[0].starts_at))
             send_email(msg)
